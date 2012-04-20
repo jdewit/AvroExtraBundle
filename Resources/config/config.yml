@@ -1,0 +1,6 @@
+services:
+    form.type.entity_identifier:
+        class: 'Avro\ExtraBundle\Form\Type\EntityIdentifierType'
+        tags:
+            - { name: form.type, alias: entity_identifier }
+        arguments: ["@doctrine"]

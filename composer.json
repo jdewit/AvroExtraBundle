@@ -1,0 +1,21 @@
+{
+    "name": "avro/extra-bundle",
+    "type": "symfony-bundle",
+    "description": "Symfony2 extra Bundle",
+    "keywords": ["extra"],
+    "homepage": "http://github.com/jdewit/AvroExtraBundle",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Joris de Wit",
+            "email": "joris.w.dewit@gmail.com"
+        }
+    ],
+    "require": {
+        "php": ">=5.3.2"
+    },
+    "autoload": {
+        "psr-0": { "Avro\\ExtraBundle": "" }
+    },
+    "target-dir": "Avro/ExtraBundle"
+}
