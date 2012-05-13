@@ -52,8 +52,8 @@ class OneEntityToIdTransformer implements DataTransformerInterface
     }
 
     /**
-* Fetch the id of the entity to populate the form
-*/
+     * Fetch the id of the entity to populate the form
+     */
     public function transform($data)
     {
         if (null === $data) {
@@ -72,8 +72,8 @@ class OneEntityToIdTransformer implements DataTransformerInterface
     }
 
     /**
-* Try to fetch the entity from its id in the database
-*/
+     * Try to fetch the entity from its id in the database
+     */
     public function reverseTransform($data)
     {
         if (!$data) {

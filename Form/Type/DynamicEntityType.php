@@ -17,7 +17,7 @@ use Avro\ExtraBundle\Form\DataTransformer\OneEntityToIdTransformer;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Exception\FormException;
 
-class EntityIdentifierType extends AbstractType
+class DynamicEntityType extends AbstractType
 {
     protected $registry;
 
@@ -50,12 +50,12 @@ class EntityIdentifierType extends AbstractType
 
     public function getParent(array $options)
     {
-        return 'hidden';
+        return 'choice';
     }
 
     public function getName()
     {
-        return 'entity_id';
+        return 'dynamic_entity';
     }
 }
 
