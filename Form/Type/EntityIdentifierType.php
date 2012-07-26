@@ -37,7 +37,7 @@ class EntityIdentifierType extends AbstractType
         ));
     }
 
-    public function getDefaultOptions(OptionsResolverInterface $resolver)
+    public function setDefaultOptions(OptionsResolverInterface $resolver)
     {
         $resolver->setDefaults(array(
             'required'          => true,
