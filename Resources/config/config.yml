@@ -10,8 +10,3 @@ services:
         tags:
             - { name: form.type, alias: dynamic_entity }
         arguments: ["@doctrine"]
-
-#    form.type.time:
-#        class: 'Avro\ExtraBundle\Form\Type\TimeType'
-#        tags:
-#            - { name: form.type, alias: time }

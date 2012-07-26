@@ -16,6 +16,7 @@ use Symfony\Bridge\Doctrine\RegistryInterface;
 use Avro\ExtraBundle\Form\DataTransformer\OneEntityToIdTransformer;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Exception\FormException;
+use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 
 class EntityIdentifierType extends AbstractType
 {
@@ -30,22 +31,22 @@ class EntityIdentifierType extends AbstractType
     {
         $builder->prependClientTransformer(new OneEntityToIdTransformer(
             $this->registry->getEntityManager($options['em']),
-            $options['class'], 
+            $options['class'],
             $options['property'],
             $options['query_builder']
         ));
     }
 
-    public function getDefaultOptions()
+    public function setDefaultOptions(OptionsResolverInterface $resolver)
     {
-        return array(
+        $resolver->setDefaults(array(
             'required'          => true,
             'em'                => null,
             'class'             => null,
             'query_builder'     => null,
             'property'          => null,
             'hidden' => true
-        );
+        ));
     }
 
     public function getParent()
