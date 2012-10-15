@@ -19,7 +19,7 @@ class AvroExtraExtension extends Extension
 
         $loader = new YamlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
 
-        $loader->load($config['db_driver']);
+        $loader->load($config['db_driver'].'.yml');
 
     }
 }
