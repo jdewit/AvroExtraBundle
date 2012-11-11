@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" /> 
+{#
+    {% stylesheets output='css/compiled/app.css' filter='scss, ?yui_css'
+        '@AvroAssetBundle/Resources/public/bootstrap/css/bootstrap.css'
+        '@AvroAssetBundle/Vendor/jquery-ui/twitter/jquery-ui-1.8.16.custom.scss'
+        '@AvroAssetBundle/Vendor/avro/scss/common/*.scss'
+    %}
+    <link rel="stylesheet" href="{{ asset_url }}" type="text/css" media="screen" />
+    {% endstylesheets %}
+#}
+    <style type="text/css">{% block customCSS %}{% endblock %}</style> 
+    {% block head %} {% endblock %}
+    <title>{% block title %}AvroCRM - Free Online CRM Software{% endblock %}</title>
+</head>
+
+<body>
+    <div class="navbar navbar-fixed">
+      <div class="navbar-inner">
+        <div class="container-fluid">
+            <a class="brand logo" href="{{ path('application_crm_client_list') }}">AvroBizManager</a>
+            {{ knp_menu_render('main', {'template': 'AvroAssetBundle:Menu:knp_menu_twitter.html.twig'}) }}
+            <ul class="nav pull-right">
+                {% if is_granted('ROLE_USER') %}
+                    <li id="fat-menu" class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">{{ app.user.fullName }}<b class="caret"></b></a>
+                        <ul class="dropdown-menu">
+                            <li><a class="profile" href="{{ path('application_user_user_profile', { 'id': app.user.id }) }}"><i class="sprite-user"></i>Profile</a></li>
+                            <li><a class="settings" href="{{ path('application_user_settings_index') }}"><i class="sprite-cog"></i>Settings</a></li> 
+                            <li class="divider"></li>
+                            <li><a href="{{ path('fos_user_security_logout') }}"><i class="sprite-shield_go"></i>Logout</a></li>
+                        </ul>
+                    </li>
+                {% else %}
+                    <li>
+                        <a class="register" href="{{ path('fos_user_registration_register') }}" >Register</a> 
+                    </li>
+                    <li>
+                        <a class="login" href="{{ path('fos_user_security_login') }}">Login</a>
+                    </li>        
+                {% endif %}
+            </ul>
+            <form class="navbar-search pull-right" method="GET" action="{{ path('application_crm_client_search') }}">
+                <input class="search-query" placeholder="{% if query is defined %}{{ query }}{% else %}Client Search...{% endif %}" type="text" name="query">
+            </form>
+        </div>
+      </div>
+    </div>
+    <div class="container-fluid">
+        <div class="row-fluid">
+            <div class="span12">
+                <div class="row-fluid">
+                    {% set ajax = false %}
+                    {% if app.session.hasFlash('success') %}
+                        <div class="alert alert-success">
+                            <a class="close" href="#">×</a>
+                            {{ app.session.flash('success') }}
+                        </div>
+                    {% elseif app.session.hasFlash('error') %}
+                        <div class="alert alert-error">
+                            <a class="close" href="#">×</a>
+                            {{ app.session.flash('error') }}
+                        </div>
+                    {% elseif app.session.hasFlash('info') %}
+                        <div class="alert alert-info">
+                            <a class="close" href="#">×</a>
+                            {{ app.session.flash('info') }}
+                        </div>
+                    {% elseif app.session.hasFlash('warning') %}
+                        <div class="alert alert-warning">
+                            <a class="close" href="#">×</a>
+                            {{ app.session.flash('warning') }}
+                        </div>
+                    {% endif %}
+                    {% block content %}{% endblock %}
+                    <div id="spinner"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<hr>
+    <footer class="center-align">
+      <p>&copy; Company 2011</p>
+    </footer>
+
+    {% javascripts output='js/compiled/app.js' filter='?yui_js' 
+            '@AvroAssetBundle/Vendor/jquery/src/jquery-1.7.1.min.js'
+            '@AvroAssetBundle/Vendor/jquery/src/jquery-ui-1.8.16.custom.min.js'
+            '@AvroAssetBundle/Resources/public/bootstrap/js/bootstrap.min.js'
+
+            '@AvroAssetBundle/Vendor/jquery/plugins/jquery.livequery.js'
+            '@AvroAssetBundle/Vendor/jquery/plugins/jquery.metadata.js'
+            '@AvroAssetBundle/Vendor/jquery/plugins/jquery.tablesorter.js'
+            '@AvroAssetBundle/Vendor/jquery/plugins/jquery.form.js'
+            
+            '@AvroAssetBundle/Vendor/knockout/src/*.js'
+            '@AvroAssetBundle/Vendor/avro/js/common/*.js'
+            '@AvroCrmBundle/Resources/assets/js/knockoutjs/*.js'
+            '@AvroUserBundle/Resources/assets/js/knockoutjs/*.js'
+    %}
+        <script type="text/javascript" src="{{ asset_url }}"></script>
+    {% endjavascripts %}        
+    <script type="text/javascript">$(document).ready(function () { {% block customJS %}{% endblock %} });</script>
+</body>
+</html>

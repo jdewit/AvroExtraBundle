@@ -1,0 +1,11 @@
+services:
+    twig.extension.text:
+           class: Twig_Extensions_Extension_Text
+           tags:
+               - { name: twig.extension }
+
+    extra.twig.extension:
+        class: Avro\ExtraBundle\Twig\ExtraExtension
+        tags:
+            -  { name: twig.extension } 
+

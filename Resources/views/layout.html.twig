@@ -1,3 +1,4 @@
-{% extends '::base.html.twig' %}
-
-
+{% extends app.request.isXmlHttpRequest ? 'AvroExtraBundle::ajaxLayout.html.twig' : 'AvroExtraBundle::simpleLayout.html.twig' %}
+{% block head %}{% endblock %}
+{% block content %}          
+{% endblock %}

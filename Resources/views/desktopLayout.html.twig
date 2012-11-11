@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" /> 
+{#
+    {% stylesheets output='css/compiled/style.css' filter='scss, ?yui_css'
+        'assets/scss/common/*.scss'
+        'assets/js/jquery/css/dark-hive/*.css'
+        'assets/js/jquery/css/common/*'
+        '@AvroBlogBundle/Resources/public/css/*.css'
+        '@AvroSiteBundle/Resources/public/scss/*' 
+        '@FOSCommentBundle/Resources/assets/css/comments.css'
+        '@AvroVideoBundle/Resources/public/scss/*.scss'
+        '@AvroCommentBundle/Resources/public/scss/*.scss'
+    %}
+    <link rel="stylesheet" href="{{ asset_url }}" type="text/css" media="screen" />
+    {% endstylesheets %}
+#}
+    {% block head %} {% endblock %}
+    <title>{% block title %}BetScholar- The best sports betting training site{% endblock %}</title>
+</head>
+
+    <body class="ui-corner-all">
+        <div class="ui-layout-center hide">
+            {% if app.session.hasFlash('error') %}
+                <div id ="centerColNotice" class="ui-state-error ui-corner-all">{{ app.session.flash('error') }}</div>
+            {% elseif app.session.hasFlash('notice') %}
+                <div id ="centerColNotice" class="ui-state-highlight ui-corner-all">{{ app.session.flash('notice') }}</div>
+            {% endif %}
+
+            <div class="content">
+                {% block content %}{% endblock %}
+                <div id="spinner"></div>
+            </div>
+        </div>
+
+        <div class="ui-layout-north hide ui-state-active">
+        <div id="logo" class="span-9 prepend-1">
+            <a href="{{ path('homepage') }}"><img src="http://localhost/betscholar.com/web/assets/images/common/logos/betscholar_logo.png"/></a>
+        </div>  
+        <div class="span-14">
+            <div id="login">{% include "AvroUserBundle:Security:embeddedLogin.html.twig" %}</div>
+            <div id="menu">
+                {{ knp_menu_render('main') }}
+            </div>
+        </div>
+    </div>
+    {#    <div class="ui-layout-east hide">{% block east %}{% endblock %}</div> 
+    <div class="ui-layout-west hide">
+<div id="clientSearch">
+    <form action="{{ path('homepage') }}" method="get">
+        <input name="q" id="searchfield" value="{% if query is defined %}{{ query }}{% else %}Search...{% endif %}" onfocus="if (this.value == 'Search...') {this.value = '';}" onblur="if (this.value == '') {this.value = 'Search...';}" type="text">
+    </form>
+</div>
+                {% block west %}{% endblock %}    
+            </div>
+            #}
+    {% javascripts output='js/script.js' filter='?yui_js' 
+            'assets/js/jquery/js/common/*.js'
+            '@AvroBlogBundle/Resources/public/js/*.js'
+            'assets/js/common/common.js'
+            '@AvroSiteBundle/Resources/public/js/*.js'
+            '@FOSCommentBundle/Resources/assets/js/comments.js'
+    %}
+        <script type="text/javascript" src="{{ asset_url }}"></script>
+    {% endjavascripts %}
+    {% block extraJavascripts %}{% endblock %}
+    <script type="text/javascript" src="http://localhost/betscholar.com/web/assets/js/jquery/js/plugins/jquery.address-1.4.min.js?state=/"></script>
+</body>
+</html>

@@ -1,0 +1,28 @@
+# Twig Configuration
+#twig:
+#    form:
+#        resources:
+#            - 'AvroExtraBundle:Form:form_div_layout.html.twig' 
+#
+## Extraic Configuration
+#extraic:
+#    java: /usr/bin/java
+#    sass: /var/lib/gems/1.9.1/bin/sass
+#    filters:
+#        scss: ~
+#        cssrewrite: ~
+#        yui_css: 
+#            jar: "%kernel.root_dir%/../vendor/avro/extra-bundle/Avro/ExtraBundle/Vendor/yui/yuicompressor-2.4.7.jar" 
+#        yui_js: 
+#            jar: "%kernel.root_dir%/../vendor/avro/extra-bundle/Avro/ExtraBundle/Vendor/yui/yuicompressor-2.4.7.jar" 
+#        less:
+#            node: /usr/bin/node
+#            node_paths: [/home/jdewit/node_modules]
+#
+#knp_menu:
+#    templating: false # if true, enables the helper for PHP templates
+#    twig:  # use "twig: false" to disable the Twig extension and the TwigRenderer
+##        template: AvroCrmBundle:Menu:knp_menu_twitter.html.twig
+#    default_renderer: twig # The renderer to use, list is also available by default
+#
+

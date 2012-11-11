@@ -21,6 +21,7 @@ class AvroExtraExtension extends Extension
 
         $loader->load($config['db_driver'].'.yml');
 
+        $loader->load('twig.yml');
     }
 }
 

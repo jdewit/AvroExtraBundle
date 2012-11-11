@@ -1,1 +1,39 @@
+services:
 
+    form.type.avro_date:
+        class: Avro\ExtraBundle\Form\Type\DateType
+        tags:
+            - { name: form.type, alias: avro_date }
+
+    form.type.avro_time:
+        class: Avro\ExtraBundle\Form\Type\TimeType
+        tags:
+            - { name: form.type, alias: avro_time }
+
+    avro.form.type.purified_text:
+        class: Avro\ExtraBundle\Form\Type\PurifiedTextType
+        arguments: ["@avro.form.transformer.html_purifier"]
+        tags:
+            - { name: form.type, alias: purified_text }
+
+    avro.form.type.purified_textarea:
+        class: Avro\ExtraBundle\Form\Type\PurifiedTextAreaType
+        arguments: ["@avro.form.transformer.html_purifier"]
+        tags:
+            - { name: form.type, alias: purified_textarea }
+
+    avro.form.transformer.html_purifier:
+        class: Avro\ExtraBundle\Form\Transformer\HTMLPurifierTransformer
+        arguments: ["@exercise_html_purifier.default"]
+
+    avro_extra.ajax.listener:
+        class: Avro\ExtraBundle\Listener\AjaxAuthenticationListener
+        tags:
+          - { name: kernel.event_listener, event: kernel.exception, method: onAccessDeniedException, priority: 1000 }
+
+    avro.voter.request:
+        class: Avro\ExtraBundle\Menu\Voter\RequestVoter
+        arguments:
+            - @service_container
+        tags:
+            - { name: knp_menu.voter }

@@ -1,0 +1,6 @@
+services:
+    avro_extra.exception.listener:
+        class: Avro\ExtraBundle\Listener\ExceptionListener
+        arguments: ["@request"]
+        tags:
+            - {name: kernel.event_listener, event: kernel.exception, method: redirect}

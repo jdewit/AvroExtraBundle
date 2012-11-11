@@ -1,0 +1,4 @@
+avro_extra_image:
+    resource: "@AvroExtraBundle/Controller/ImageController.php"
+    type:     annotation 
+ 

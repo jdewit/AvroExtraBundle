@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    {% stylesheets output='css/compiled/betscholar.css' filter='scss, ?yui_css'
+        '@AvroAssetBundle/Resources/public/scss/common/*'
+        '@AvroAssetBundle/Resources/public/scss/sites/betscholar.com/*'
+        '@AvroAssetBundle/Resources/public/js/jquery/css/dark-hive/*.css'
+        '@AvroAssetBundle/Resources/public/js/jquery/css/common/*'
+        '@AvroBlogBundle/Resources/public/scss/*'
+        '@AvroSiteBundle/Resources/public/scss/*' 
+        '@AvroVideoBundle/Resources/public/scss/*'
+        '@AvroCommentBundle/Resources/public/scss/*'
+    %}
+    <link rel="stylesheet" href="{{ asset_url }}" type="text/css" media="screen" />
+    {% endstylesheets %}
+    {% block head %} {% endblock %}
+    <title>{% block title %}BetScholar- The best sports betting training site{% endblock %}</title>
+</head>
+<body>
+    <div id="container">
+        <div id="header" class="ui-helper-clearfix ui-state-active">
+
+            <div id="logo" class="span-9 prepend-1">
+                <a href="{{ path('application_site_page_show', { 'name': 'home' }) }}"><img src="{{ asset('bundles/applicationasset/images/common/logos/betscholar_logo.png') }}"/></a>
+            </div>  
+            <div class="span-14">
+                <div id="login">
+
+                    {% if is_granted('ROLE_USER') %}
+                    {% endif %}
+                    {% if is_granted('ROLE_ADMIN') %}
+                        <a href="{{ path('application_site_admin_index') }}">Control Panel</a> | 
+                    {% endif %}
+                    {% include "AvroUserBundle:Security:embeddedLogin.html.twig" %}
+                </div>
+                <nav>
+                    {{ knp_menu_render('mainMenu') }}
+                </nav>
+            </div>
+        </div>
+        <div id="leftCol">
+            {% if app.session.hasFlash('error') %}
+            <div id="notice" class="ui-state-error">
+                {{ app.session.flash('error') }}
+                <button class="hideParent"></button>
+            </div>
+            {% elseif app.session.hasFlash('notice') %}
+            <div id="notice" class="ui-state-highlight">
+                {{ app.session.flash('notice') }}
+                <button class="hideParent"></button>
+            </div>
+            {% endif %}
+
+            {% block content %}{% endblock %} 
+        </div>
+        <div id="rightCol">
+            {% block rightCol  %} {% endblock %}
+        </div>
+        <div id="footer" class="span-24 center-align padding-1">
+            <p>&#169;2011 Betscholar.com</p>
+        </div>
+    </div>
+    {% javascripts output='js/compiled/betscholar.js' filter='?yui_js' 
+            '@AvroAssetBundle/Resources/public/js/jquery/js/plugins/common/*.js'
+            '@AvroAssetBundle/Resources/public/js/jquery/js/invokers/common/*'
+            '@AvroBlogBundle/Resources/public/js/*.js'
+            '@AvroSiteBundle/Resources/public/js/*.js'
+            '@FOSCommentBundle/Resources/assets/js/comments.js'
+    %}
+    <script type="text/javascript" src="{{ asset_url }}"></script>
+    {% endjavascripts %}
+    {% block extraJavascripts %}{% endblock %}
+</body>
+</html>

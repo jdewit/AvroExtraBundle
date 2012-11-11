@@ -1,0 +1,74 @@
+{% macro attributes(attributes) %}
+{% for name, value in attributes %}
+    {%- if value is not none and value is not sameas(false) -%}
+        {{- ' %s="%s"'|format(name, value is sameas(true) ? name|e : value|e)|raw -}}
+    {%- endif -%}
+{%- endfor -%}
+{% endmacro %}
+
+{% block label %}{% if options.allow_safe_labels and item.getExtra('safe_label', false) %}{{ item.label|raw }}{% else %}{{ item.label }}{% endif %}{% endblock %}
+
+{% block compressed_root %}
+{% spaceless %}
+{{ block('root') }}
+{% endspaceless %}
+{% endblock %}
+
+{% block root %}
+{% if item.hasChildren and options.depth is not sameas(0) and item.displayChildren %}
+    {% set currentItem = item %}
+    <div id="sideMenu" class="accordion">
+        {% for item in currentItem.children %}
+            {% set isActive = false %}
+            {% if item.hasChildren %}
+                {% for item in item.children %}
+                    {% if matcher.isCurrent(item) %}
+                        {% set isActive = true %}
+                    {% endif %}
+                {% endfor %}
+            {% else %}
+                {% if matcher.isCurrent(item) %}
+                    {% set isActive = true %}
+                {% endif %}
+            {% endif %}
+
+            {% if item.hasChildren %}
+                {% if isActive %}
+                    {%- set linkAttributes = item.linkAttributes|merge({'class': 'accordion-toggle active', 'data-toggle': 'collapse', 'data-parent': '#sideMenu'}) %}
+                {% else %}
+                    {%- set linkAttributes = item.linkAttributes|merge({'class': 'accordion-toggle collapsed', 'data-toggle': 'collapse', 'data-parent': '#sideMenu'}) %}
+                {% endif %}
+                {%- set uri = '#collapse'~ loop.index %}
+                {%- set caret = ' <i class="icon-chevron-down"></i>' %}
+            {% else %}
+                {% if isActive %}
+                    {%- set linkAttributes = item.linkAttributes|merge({'class': 'accordion-toggle active'}) %}
+                {% else %}
+                    {%- set linkAttributes = item.linkAttributes|merge({'class': 'accordion-toggle'}) %}
+                {% endif %}
+                {%- set uri = item.uri %}
+                {%- set caret = '' %}
+            {% endif %}
+
+            <div class="accordion-group">
+                <div class="accordion-heading">
+                    <a href="{{ uri }}" {{ _self.attributes(linkAttributes) }}>{% if linkAttributes.icon is defined %}<i class="{{ linkAttributes.icon }}"></i>{% endif %}{{ block('label') }}{{ caret|raw }}</a>
+                </div>
+                {% if item.hasChildren %}
+                    <div id="collapse{{ loop.index }}" class="accordion-body collapse{% if isActive %} in{% endif %}">
+                        <div class="accordion-inner">
+                            <ul class="nav nav-stacked nav-pills">
+                                {% for item in item.children %}
+                                    <li class="{% if matcher.isCurrent(item) %}active{% endif %}"><a href="{{ item.uri }}" class="">{% if item.linkAttributes.icon is defined %}<i class="{{ item.linkAttributes.icon }}"></i>{% endif %}{{ block('label') }}</a></li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+        {% endfor %}
+    </div>
+{% endif %}
+{% endblock %}
+
+

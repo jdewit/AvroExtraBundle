@@ -1,0 +1,73 @@
+
+ {% macro prototype(number) %}
+            {{ form_widget(number.number) }}
+            {{ form_errors(number.number) }}
+            <a class="removeCollectionItem" href="#">x</a>
+            <br />
+{% endmacro %}
+
+    <div id="phoneNumbers">
+        <div class="form_row">
+            <label>Phone Numbers</label>
+        {% for key, number in form.phoneNumbers %}
+            {{ _self.prototype(number) }}
+        {% endfor %}
+        </div>
+        <script type="text/html">
+            {{ _self.prototype(form.phoneNumbers.get('prototype')) }} 
+        </script>
+    </div>
+        <a class="addCollectionItem addService" href="#" data-target="#phoneNumbers" title="Add another phone number">+ Add Phone Number</a>
+        {{ form_rest(form) }}
+      
+<script>
+        $('.addCollectionItem').click(function(event) {
+                event.preventDefault();
+
+                //get target container
+                var collectionItemsContainer = $( $(this).data('target') );
+                //alert(formOptionsTable.attr('class'));
+                var newRow = collectionItemsContainer.find('script[type="text/html"]').text();         
+//alert(newRow);
+                //append and show new collection item to collection container
+                collectionItemsContainer.find('.form_row').append( newRow );  
+                
+                refreshCollection(collectionItemsContainer);
+
+            });
+
+            $("a.removeCollectionItem").live('click',function(event) {
+                event.preventDefault();
+                var collectionItemsContainer = $( $(this).data('target') );
+
+                $(this).parents('.item').remove();
+
+                refreshCollection(collectionItemsContainer);
+            });
+
+            function refreshCollection(collectionItemsContainer) {
+                //rename collection inputs
+                var index = 0;
+                collectionItemsContainer.find('tr').each(function() {
+//                    $(this).attr('label', $(this).attr('name').replace(/\$\$name\$\$/g, index));                    
+                    $(this).find('input, select').each(function() {
+                        $(this).attr('id', $(this).attr('id').replace(/\$\$name\$\$/g, index));
+                        $(this).attr('name', $(this).attr('name').replace(/\$\$name\$\$/g, index));
+                    });
+                    index = index + 1;
+                });                
+            }
+
+//        $('.addCollectionItem').each(function(){
+//            $( this ).click();           
+//        });
+
+
+
+
+
+
+
+
+</script>
+

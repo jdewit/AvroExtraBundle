@@ -20,10 +20,10 @@ class Configuration implements ConfigurationInterface
     {
         $treeBuilder = new TreeBuilder();
         $rootNode = $treeBuilder->root('avro_extra');
-       
+
         $rootNode
             ->children()
-                ->scalarNode('db_driver')->cannotBeOverwritten()->defaultValue('orm')->cannotBeEmpty()->end()
+                ->scalarNode('db_driver')->defaultValue('mongodb')->end()
             ->end();
 
         return $treeBuilder;
