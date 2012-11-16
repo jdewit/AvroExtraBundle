@@ -6,7 +6,7 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations\AbstractField;
 /**
  * @Annotation
  */
-class DecimalType extends AbstractField
+class MoneyType extends AbstractField
 {
-    public $type = 'decimal';
+    public $type = 'money';
 }
