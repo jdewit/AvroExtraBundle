@@ -24,6 +24,11 @@ class Configuration implements ConfigurationInterface
         $rootNode
             ->children()
                 ->scalarNode('db_driver')->defaultValue('mongodb')->end()
+                ->booleanNode('twig')->defaultFalse()->cannotBeEmpty()->end()
+                ->booleanNode('menu')->defaultFalse()->cannotBeEmpty()->end()
+                ->booleanNode('form')->defaultFalse()->cannotBeEmpty()->end()
+                ->booleanNode('ajax')->defaultFalse()->cannotBeEmpty()->end()
+                ->booleanNode('exception')->defaultFalse()->cannotBeEmpty()->end()
             ->end();
 
         return $treeBuilder;

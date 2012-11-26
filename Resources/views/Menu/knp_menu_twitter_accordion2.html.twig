@@ -26,29 +26,31 @@
                         {% set isActive = true %}
                     {% endif %}
                 {% endfor %}
+                {% if isActive %}
+                    {% set addClass = 'accordion-toggle active ' %}
+                    {%- set caret = ' <i class="icon-chevron-down"></i>' %}
+                {% else %}
+                    {% set addClass = 'accordion-toggle collapsed ' %}
+                    {%- set caret = ' <i class="icon-chevron-right"></i>' %}
+                {% endif %}
+                {%- set uri = '#collapse'~ loop.index %}
             {% else %}
                 {% if matcher.isCurrent(item) %}
                     {% set isActive = true %}
                 {% endif %}
-            {% endif %}
-
-            {% if item.hasChildren %}
                 {% if isActive %}
-                    {%- set linkAttributes = item.linkAttributes|merge({'class': 'accordion-toggle active', 'data-toggle': 'collapse', 'data-parent': '#sideMenu'}) %}
-                {% else %}
-                    {%- set linkAttributes = item.linkAttributes|merge({'class': 'accordion-toggle collapsed', 'data-toggle': 'collapse', 'data-parent': '#sideMenu'}) %}
-                {% endif %}
-                {%- set uri = '#collapse'~ loop.index %}
-                {%- set caret = ' <i class="icon-chevron-down"></i>' %}
-            {% else %}
-                {% if isActive %}
-                    {%- set linkAttributes = item.linkAttributes|merge({'class': 'accordion-toggle active'}) %}
-                {% else %}
-                    {%- set linkAttributes = item.linkAttributes|merge({'class': 'accordion-toggle'}) %}
+                    {% set addClass = 'active ' %}
                 {% endif %}
                 {%- set uri = item.uri %}
                 {%- set caret = '' %}
             {% endif %}
+            {% if item.linkAttributes['class'] is defined %}
+                {% set class = addClass ~ item.linkAttributes['class'] %}
+            {% else %}
+                {% set class = addClass %}
+            {% endif %}
+
+            {%- set linkAttributes = item.linkAttributes|merge({'class': class, 'data-toggle': 'collapse', 'data-parent': '#sideMenu'}) %}
 
             <div class="accordion-group">
                 <div class="accordion-heading">
@@ -59,7 +61,10 @@
                         <div class="accordion-inner">
                             <ul class="nav nav-stacked nav-pills">
                                 {% for item in item.children %}
-                                    <li class="{% if matcher.isCurrent(item) %}active{% endif %}"><a href="{{ item.uri }}" class="">{% if item.linkAttributes.icon is defined %}<i class="{{ item.linkAttributes.icon }}"></i>{% endif %}{{ block('label') }}</a></li>
+                                    {% set class = item.linkAttributes['class'] is defined ? item.linkAttributes['class'] : '' %}
+                                    {% set title = item.linkAttributes['title'] is defined ? item.linkAttributes['title'] : '' %}
+                                    {% set iconClass = item.linkAttributes['icon'] is defined ? item.linkAttributes['icon'] : '' %}
+                                    <li class="{% if matcher.isCurrent(item) %}active{% endif %}"><a href="{{ item.uri }}" class="{{ class }}" title="{{ title }}">{% if item.linkAttributes.icon is defined %}<i class="{{ iconClass }}"></i>{% endif %}{{ block('label') }}</a></li>
                                 {% endfor %}
                             </ul>
                         </div>

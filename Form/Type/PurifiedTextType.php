@@ -1,6 +1,6 @@
 <?php
 
-namespace Avro\AssetBundle\Form\Type;
+namespace Avro\ExtraBundle\Form\Type;
 
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;

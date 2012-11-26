@@ -8,4 +8,5 @@ services:
         class: Avro\ExtraBundle\Twig\ExtraExtension
         tags:
             -  { name: twig.extension } 
+        arguments: ["@twig"]
 

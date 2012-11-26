@@ -1,13 +1,30 @@
 <?php
+
 namespace Avro\ExtraBundle\Twig;
 
 class ExtraExtension extends \Twig_Extension {
 
+    protected $environment;
+
+    public function __construct (\Twig_Environment $environment)
+    {
+        $this->environment = $environment;
+    }
+
+    public function getFunctions()
+    {
+        return array(
+            'back_button' => new \Twig_Function_Method($this, 'backButton', array('is_safe' => array('html'))),
+        );
+    }
     public function getFilters()
     {
         return array(
             'allowQuotes'    => new \Twig_Filter_Function(
                 '\Avro\ExtraBundle\Twig\ExtraExtension::allowQuotesFilter'
+            ),
+            'yn'    => new \Twig_Filter_Function(
+                '\Avro\ExtraBundle\Twig\ExtraExtension::yesNo'
             ),
             'reset'    => new \Twig_Filter_Function(
                 '\Avro\ExtraBundle\Twig\ExtraExtension::reset'
@@ -17,7 +34,7 @@ class ExtraExtension extends \Twig_Extension {
             ),
             'daysAgo'   => new \Twig_Filter_Function(
                 '\Avro\ExtraBundle\Twig\ExtraExtension::daysAgoFilter'
-            )
+            ),
         );
     }
 
@@ -69,6 +86,29 @@ class ExtraExtension extends \Twig_Extension {
         }
 
         return 'just now';
+    }
+
+    public static function yesNo($input)
+    {
+        if ($input) {
+            return 'Yes';
+        } else {
+            return 'No';
+        }
+    }
+
+    public function backButton($route)
+    {
+        $template = 'AvroExtraBundle:Templates:buttons.html.twig';
+
+        $globals = $this->environment->getGlobals();
+        $referer = $globals['app']->getRequest()->headers->get('referer');
+
+        if (!$template instanceof \Twig_Template) {
+            $template = $this->environment->loadTemplate($template);
+        }
+
+        return $template->renderBlock('back_button', array('route' => $route, 'referer' => $referer));
     }
 
 }

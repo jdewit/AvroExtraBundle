@@ -1,5 +1,5 @@
 <?php
-namespace Avro\AssetBundle\Composer;
+namespace Avro\ExtraBundle\Composer;
 
 use Composer\Composer;
 use Composer\Package\PackageInterface;

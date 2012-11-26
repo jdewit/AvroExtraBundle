@@ -1,5 +1,4 @@
 services:
-
     form.type.avro_date:
         class: Avro\ExtraBundle\Form\Type\DateType
         tags:
@@ -26,14 +25,3 @@ services:
         class: Avro\ExtraBundle\Form\Transformer\HTMLPurifierTransformer
         arguments: ["@exercise_html_purifier.default"]
 
-    avro_extra.ajax.listener:
-        class: Avro\ExtraBundle\Listener\AjaxAuthenticationListener
-        tags:
-          - { name: kernel.event_listener, event: kernel.exception, method: onAccessDeniedException, priority: 1000 }
-
-    avro.voter.request:
-        class: Avro\ExtraBundle\Menu\Voter\RequestVoter
-        arguments:
-            - @service_container
-        tags:
-            - { name: knp_menu.voter }

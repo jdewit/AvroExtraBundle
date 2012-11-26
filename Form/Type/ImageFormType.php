@@ -1,5 +1,5 @@
 <?php
-namespace Avro\AssetBundle\Form\Type;
+namespace Avro\ExtraBundle\Form\Type;
 
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -25,7 +25,7 @@ class ImageFormType extends AbstractType
     public function setDefaultOptions(OptionsResolverInterface $resolver)
     {
         $resolver->setDefaults(array(
-            'data_class' => 'Avro\AssetBundle\Entity\Image'
+            'data_class' => 'Avro\ExtraBundle\Entity\Image'
         ));
     }
 

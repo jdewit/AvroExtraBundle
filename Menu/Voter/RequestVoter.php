@@ -2,7 +2,7 @@
 
 // src/merk/Voter/RequestVoter.php
 
-namespace Avro\AssetBundle\Menu\Voter;
+namespace Avro\ExtraBundle\Menu\Voter;
 
 use Knp\Menu\ItemInterface;
 use Knp\Menu\Matcher\Voter\VoterInterface;
@@ -34,7 +34,9 @@ class RequestVoter implements VoterInterface
      */
     public function matchItem(ItemInterface $item)
     {
-        if ($item->getUri() === $this->container->get('request')->getRequestUri()) {
+        $request = $this->container->get('request');
+
+        if ($item->getUri() === $request->getRequestUri()) {
             return true;
         }
 

@@ -1,5 +1,5 @@
 <?php
-namespace Avro\AssetBundle\Listener;
+namespace Avro\ExtraBundle\Listener;
 
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Security\Core\Exception\AuthenticationException;

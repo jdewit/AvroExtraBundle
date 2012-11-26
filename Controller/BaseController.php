@@ -1,6 +1,6 @@
 <?php
 
-namespace Avro\AssetBundle\Controller;
+namespace Avro\ExtraBundle\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 

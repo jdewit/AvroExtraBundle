@@ -1,6 +1,6 @@
 <?php
 
-namespace Avro\AssetBundle\Form\Transformer;
+namespace Avro\ExtraBundle\Form\Transformer;
 
 use Symfony\Component\Form\DataTransformerInterface;
 

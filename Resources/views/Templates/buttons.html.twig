@@ -1,0 +1,3 @@
+{% block back_button %}
+    <a class="btn btn-large pull-right" href="{% if referer %}{{ referer }}{% else %}{{ path(route) }}{% endif %}"><i class="icon-arrow-left"></i> Back</a>
+{% endblock %}

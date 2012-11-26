@@ -1,0 +1,7 @@
+services: 
+    avro.voter.request:
+        class: Avro\ExtraBundle\Menu\Voter\RequestVoter
+        arguments:
+            - @service_container
+        tags:
+            - { name: knp_menu.voter }

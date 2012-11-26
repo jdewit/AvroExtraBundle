@@ -1,6 +1,6 @@
 <?php
 
-namespace Avro\AssetBundle\Features\Context;
+namespace Avro\ExtraBundle\Features\Context;
 
 use Behat\BehatBundle\Context\MinkContext;
 use Behat\Behat\Context\ClosuredContextInterface;

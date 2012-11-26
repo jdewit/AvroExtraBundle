@@ -7,12 +7,12 @@ class MoneyType extends Type
 {
     public function convertToDatabaseValue($value)
     {
-        return $value !== null ? (integer) $value * 100 : null;
+        return $value !== null ? (integer) $value * 100 : 0;
     }
 
     public function convertToPHPValue($value)
     {
-        return $value !== null ? (integer) $value / 100 : null;
+        return $value !== null ? number_format((integer) $value / 100, 2, '.','') : 0;
     }
 
     public function closureToMongo()
@@ -22,7 +22,6 @@ class MoneyType extends Type
 
     public function closureToPHP()
     {
-        return '$return = (int) $value / 100;';
+        return '$return = number_format((int) $value / 100, 2, ".", "");';
     }
-
 }

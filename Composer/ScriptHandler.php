@@ -7,14 +7,14 @@
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
  */
-namespace Avro\AssetBundle\Composer;
+namespace Avro\ExtraBundle\Composer;
 
 use Composer\Script\Event;
 use Symfony\Component\Filesystem\Exception\IOException;
 
 class ScriptHandler
 {
-    public static function postInstallSymlinkAssets(Event $event)
+    public static function postInstallSymlinkExtras(Event $event)
     {
         $IO = $event->getIO();
         $extra = $event->getComposer()->getPackage()->getExtra();
