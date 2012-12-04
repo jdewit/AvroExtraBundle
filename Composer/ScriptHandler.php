@@ -14,7 +14,7 @@ use Symfony\Component\Filesystem\Exception\IOException;
 
 class ScriptHandler
 {
-    public static function postInstallSymlinkExtras(Event $event)
+    public static function postInstallSymlinkAssets(Event $event)
     {
         $IO = $event->getIO();
         $extra = $event->getComposer()->getPackage()->getExtra();
