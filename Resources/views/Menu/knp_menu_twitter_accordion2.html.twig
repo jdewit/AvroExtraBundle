@@ -40,6 +40,8 @@
                 {% endif %}
                 {% if isActive %}
                     {% set addClass = 'active ' %}
+                {% else %}
+                    {% set addClass = '' %}
                 {% endif %}
                 {%- set uri = item.uri %}
                 {%- set caret = '' %}

@@ -22,6 +22,18 @@ services:
             - { name: form.type, alias: purified_textarea }
 
     avro.form.transformer.html_purifier:
-        class: Avro\ExtraBundle\Form\Transformer\HTMLPurifierTransformer
+        class: Avro\ExtraBundle\Form\DataTransformer\HTMLPurifierTransformer
         arguments: ["@exercise_html_purifier.default"]
+
+    form.type.entity_identifier:
+        class: 'Avro\ExtraBundle\Form\Type\EntityIdentifierType'
+        tags:
+            - { name: form.type, alias: entity_id }
+        arguments: ["@doctrine"]
+
+    form.type.dynamic_entity:
+        class: 'Avro\ExtraBundle\Form\Type\DynamicEntityType'
+        tags:
+            - { name: form.type, alias: dynamic_entity }
+        arguments: ["@doctrine"]
 

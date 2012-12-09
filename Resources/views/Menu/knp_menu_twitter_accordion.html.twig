@@ -19,7 +19,7 @@
 
 {% block list %}
 {% if item.hasChildren and options.depth is not sameas(0) and item.displayChildren %}
-    <ul {% if item.level == 0 %}class="nav nav-list"{% else %}id="{{ block('label') }}" class="collapse {#{% if item.currentAncestor %}in{% endif %}#}"{% endif %}>
+    <ul {% if item.level == 0 %}class="nav nav-list"{% else %}id="{{ block('label') }}" class="collapse unstyled {#{% if item.currentAncestor %}in{% endif %}#}"{% endif %}>
         {{ block('children') }}
     </ul>
 {% endif %}
