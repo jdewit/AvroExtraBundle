@@ -12,7 +12,7 @@
 namespace Avro\ExtraBundle\Form\Type;
 
 use Symfony\Component\Form\FormBuilderInterface;
-use Symfony\Bridge\Doctrine\RegistryInterface;
+use Doctrine\Common\Persistent\ObjectManager;
 use Avro\ExtraBundle\Form\DataTransformer\OneEntityToIdTransformer;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Exception\FormException;
@@ -20,17 +20,17 @@ use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 
 class DynamicEntityType extends AbstractType
 {
-    protected $registry;
+    protected $objectManager;
 
-    public function __construct(RegistryInterface $registry)
+    public function __construct(ObjectManager $objectManager)
     {
-        $this->registry = $registry;
+        $this->objectManager = $objectManager;
     }
 
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder->prependClientTransformer(new OneEntityToIdTransformer(
-            $this->registry->getEntityManager($options['em']),
+            $this->objectManager->getEntityManager($options['em']),
             $options['class'],
             $options['property'],
             $options['query_builder']

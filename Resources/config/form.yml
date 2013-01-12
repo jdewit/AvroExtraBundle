@@ -25,15 +25,4 @@ services:
         class: Avro\ExtraBundle\Form\DataTransformer\HTMLPurifierTransformer
         arguments: ["@exercise_html_purifier.default"]
 
-    form.type.entity_identifier:
-        class: 'Avro\ExtraBundle\Form\Type\EntityIdentifierType'
-        tags:
-            - { name: form.type, alias: entity_id }
-        arguments: ["@doctrine"]
-
-    form.type.dynamic_entity:
-        class: 'Avro\ExtraBundle\Form\Type\DynamicEntityType'
-        tags:
-            - { name: form.type, alias: dynamic_entity }
-        arguments: ["@doctrine"]
 
