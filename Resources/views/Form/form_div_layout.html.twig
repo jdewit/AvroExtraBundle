@@ -80,10 +80,6 @@
 {% if form.children|length == 0 %}
     <div class="control-group">
         {{ form_label(form, label|default(null)) }}
-        {% if not compound %}
-            {{ form_errors(form) }}
-        {% endif %}
-
         <div class="controls">
             {{ form_widget(form) }}
             {% if attr['data-help'] is defined %}
