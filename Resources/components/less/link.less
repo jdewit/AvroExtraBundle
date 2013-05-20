@@ -1,0 +1,77 @@
+a, ui-btn {
+    text-decoration: none; 
+    outline: none !important;
+    
+    &.small {
+        font-size: 0.75em;
+    }
+    &.bland {
+        border: 1px solid transparent;
+        color: #000 !important;
+
+        span {
+            padding: 0 0.5em;
+        }
+    }
+    &.bland:hover {
+        text-decoration: none;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+    }
+    &.ui-btn {
+        padding: 0.15em 0.5em;
+        display: inline-block;
+
+        &.small {
+            font-size: 0.75em;
+            padding: 0.25em;
+
+            .caret {
+                margin: .5em;
+            }
+        }
+        &.big {
+            padding: 0.5em 2em;
+            margin: 0 1em;
+        }
+
+    }
+
+    &:hover{
+        text-decoration: underline; 
+        cursor: pointer;
+    }
+
+    &.image {
+        padding: 0 0 0 1em;
+    }
+    &.logo {
+            padding-left: 1em;
+            line-height: 50px;
+            vertical-align: middle;
+        span {
+            font-style: italic;
+            font-weight: bold;
+            border: none;
+            background: none;
+            display: inline;
+            font-size: 2em;
+        }
+    }
+    &.ui-icon {
+        width: 1em;
+        float: left;
+        padding: 0 0.2em;
+    }
+
+}
+
+a.current {
+    pointer: none;
+    text-decoration: underline;
+}
+
+a.moveHandle {
+    cursor: move;
+}
+

@@ -1,0 +1,79 @@
+
+.box {
+    text-align: left;
+    margin-bottom: 16px;
+    h3 {
+        padding: 0.5em 1em;
+    }
+    p {
+        padding: 0 1em;
+    }
+
+    form {
+        margin: 0;
+    }
+
+    .box-header {
+        background-color: #F5F5F5;
+        border: 1px solid #DDDDDD;
+        border-radius: 6px 6px 6px 6px;
+
+        margin-bottom: -3px;
+        padding: 10px 10px 5px 10px;
+        position: relative;
+        border-bottom: 1px solid #DDDDDD;
+
+        h1, h2, h3, h4, h5, h6 {
+            margin: 0;
+            padding: 0;
+        }
+        h1 {
+            padding: 9px 15px;
+        }
+        .throw-right {
+            margin-top: 1.75em;
+        }
+        i {
+            margin-top: 3px;
+        }
+        .close {
+            margin-top: 2px;
+        }
+    }
+    .box-body {
+        background-color: #FFFFFF;
+        box-shadow: 0 1px 1px rgba(0, 0, 0, 0.075);
+        border-left: 1px solid #DDDDDD;
+        border-right: 1px solid #DDDDDD;
+        border-bottom: 1px solid #DDDDDD;
+        border-radius: 0 0 6px 6px;
+        padding: 15px;
+        overflow: auto;
+    }
+    .box-form {
+        margin-bottom: 0;
+    }
+    .box-footer {
+        background-color: #F5F5F5;
+        border-radius: 0 0 6px 6px;
+        border: 1px solid #DDDDDD;
+        box-shadow: 0 1px 0 #FFFFFF inset;
+        margin-top: -3px;
+        margin-bottom: 0;
+        padding: 14px 15px 15px;
+    }
+    .box-footer:before, .box-footer:after {
+        content: "";
+        display: table;
+    }
+    .box-footer:after {
+        clear: both;
+    }
+    .box-footer .btn + .btn {
+        margin-bottom: 0;
+        margin-left: 5px;
+    }
+    .box-footer .btn-group .btn + .btn {
+        margin-left: -1px;
+    }
+}

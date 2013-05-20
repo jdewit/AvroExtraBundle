@@ -1,0 +1,97 @@
+@imageDir: "../../../images";
+
+.delay {
+    display: none;
+}
+.page-header {
+    border-color: #ddd;
+}
+.page-heading {
+    margin: 1em 0;
+}
+.border {
+    border: solid #ccc 1px;
+}
+.shadows {
+    -webkit-box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+    -moz-box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);   
+}
+.tight {
+    margin: 0;
+    padding: 0;
+}
+#spinner {
+    text-align: center;
+    display: none;
+    left: 25%;
+    top: 15%;
+    width: 50%;
+    height: 50%;
+    z-index: 10000;
+    background: url("@{imageDir}/common/ajax-loader.gif") no-repeat scroll transparent;
+    background-position: center;
+    position: fixed;
+    overflow: auto;
+}
+
+.hide {
+    display: none;
+}
+.show {
+    display: block;
+}
+
+
+address {
+    margin: 0;
+}
+
+.show-on-hover-container {
+    position: relative;
+
+    .show-on-hover-item {
+        visibility: hidden;
+        position: absolute;
+        right: 10px;
+        top: 10px;
+    }
+
+    &:hover {
+        .show-on-hover-item {
+            visibility: visible !important;
+        }
+    }
+
+}
+
+.pointer {
+    cursor: pointer;
+}
+
+.border-left {
+    border-left: 1px solid #ccc;
+}
+.border-top {
+    border-top: 1px solid #ccc;
+}
+.border-right {
+    border-right: 1px solid #ccc;
+}
+.border-bottom {
+    border-bottom: 1px solid #ccc;
+}
+
+.paginator {
+    text-align: center;
+    margin-top: 1em;
+}
+
+#queueContainer {
+    z-index: 1;
+    position: relative;
+    float: right; 
+    margin: 0;
+}
+
+

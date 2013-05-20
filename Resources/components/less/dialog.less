@@ -1,0 +1,78 @@
+.ui-dialog {
+    padding-bottom: 2px;
+    .form-content {
+        min-height: 100px;
+    }
+    .form-actions {
+        margin: 0.75em 0 0 0;
+        padding: 0.5em;
+        display: block;
+        clear: both;
+        min-height: 20px;
+        overflow: hidden;
+        
+
+        [class^="icon-"] {
+            vertical-align: text-bottom;
+            padding: 0 3px 3px 0;
+        }
+
+    }
+
+    .ui-dialog-titlebar {
+        margin-bottom: 0.75em;
+    }
+
+    .ui-dialog-content {
+        padding: 0;
+    }
+    form {
+        margin: 0;
+    }
+
+    .well {
+        margin: 0.75em 0 0 0;
+    }
+
+    section {
+        margin-bottom: 0;
+    }
+
+    .ui-tabs { 
+        padding: 0;
+        border: none !important;
+
+        ul:first-child {
+            position: relative;
+        }
+        .ui-tabs-panel {
+            margin: 0 auto;
+            padding: 1em 0 0 0 !important;
+
+            div.form-actions {
+                margin-left: -4%;
+                margin-right: -4%;
+            }
+        }
+        a.dialog-close {
+            position: absolute;
+            right: .3em;
+            top: 50%;
+            width: 19px;
+            margin: -10px 0 0 0;
+            padding: 1px;
+            height: 18px; 
+
+            span {
+                display: block;
+                margin: 1px; 
+            }
+            &:hover, .ui-dialog .ui-dialog-titlebar-close:focus {
+                padding: 0; 
+            }
+        }
+    }
+}
+
+
+

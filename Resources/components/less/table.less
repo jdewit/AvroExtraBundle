@@ -1,0 +1,198 @@
+@imageDir: "../../../images/icons";
+
+
+
+table {
+    th.actions {
+        width: 125px;
+    }
+
+}
+
+table.styled, table.table-styled {
+    width: 100%;
+
+    input {
+        text-align: center;
+    }
+    th {
+        text-align: center;
+        
+        &.check-all {
+            width: 30px;
+        }
+
+        border-bottom: 1px solid #eee;
+    }
+    td {
+        text-align: center;
+    }
+    tr.pointer:hover {
+        background-color: #eee;
+    }
+    tr.highlight-on-hover:hover {
+        td {
+            background-color: #ddd;
+        }
+    }
+    tbody {
+        td {
+            padding: 0.25em;
+            vertical-align: middle;
+
+            a.wide {
+                width: 100%;
+                display: block;
+            }
+        }
+        &.border-bottom tr:last-child td {
+        }
+    }
+
+    tfoot {
+        td {
+            text-align: left;
+            border: none;
+
+            &:first-child {
+                border-left: #ccc solid 1px;
+            }
+        }
+        i.sprite-arrow-left-up {
+            margin-left: 0.75em;
+            cursor: pointer;
+        }
+        tr:first-child td {
+            border-top: #ddd solid 2px;
+        }
+    }
+}
+table.no-style {
+    thead th {
+        border: none;
+        border-bottom: solid #ccc 1px;
+    }
+
+}
+
+xtable {
+    th {
+        border: none;
+
+        input {
+            float: left;
+        }
+    }
+    tbody {
+        td.row-actions {
+            width: 8em;
+            .icon {
+                margin: 0 0.5em;
+                display: none;
+            }
+        }
+
+        tr {
+            &.pointer {
+                td:hover {
+                    text-decoration: underline;
+                }
+            }
+            &:hover {
+                td.row-actions {
+                    a.icon {
+                        display: inline;
+                    }
+                }
+            }
+        }
+        
+    }
+    tfoot {
+        tr {
+            border-top: solid #ccc 1px;
+        }
+    }
+
+    &.unstyled {
+        thead {
+            border-bottom: solid #ccc 0.01em !important;
+            
+            th {
+                padding: 0.15em 0.25em;
+                text-decoration: underline;
+            }
+        }
+        tbody {
+            border: none;
+
+            tr, td {
+                border: none;
+
+                &.border-bottom {
+                    border-bottom: solid #ccc 1px !important;
+                }
+            }
+            td {
+                padding: 3px;
+            }
+        }
+        
+    }
+}
+
+/*
+RESPONSIVE TABLES
+=================
+Max width before this PARTICULAR table gets nasty
+This query will take effect for any screen smaller than 760px
+and also iPads specifically.
+*/
+@media
+only screen and (max-width: 760px),
+(min-device-width: 768px) and (max-device-width: 1024px)  {
+
+	/* Force table to not be like tables anymore */
+	table.responsive {
+		display: block;
+
+        thead, tbody, th, td, tr {
+		    display: block;
+        }
+
+        /* Hide table headers (but not display: none;, for accessibility) */
+        thead tr {
+            position: absolute;
+            top: -9999px;
+            left: -9999px;
+        }
+
+        tr { border: 1px solid #ccc; }
+
+        td {
+            /* Behave  like a "row" */
+            border: none;
+            border-bottom: 1px solid #eee;
+            position: relative;
+            padding-left: 50%;
+        }
+
+        td:before {
+            font-weight: bold;
+            /* Now like a table header */
+            position: absolute;
+            /* Top/left values mimic padding */
+            top: 6px;
+            left: -30px;
+            width: 45%;
+            padding-right: 10px;
+            white-space: nowrap;
+        }
+
+        /*
+        Label the data
+        */
+        td:before { content: attr(data-label); }
+    }
+}
+
