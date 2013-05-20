@@ -18,17 +18,17 @@ class Image
      * @ORM\Column(type="integer")
      * @ORM\GeneratedValue(strategy="AUTO")
      */
-    public $id;
+    protected $id;
 
     /**
      * @Assert\File(maxSize="6000000")
      */
-    public $file;
+    protected $file;
 
     /**
      * Upload root directory
      */
-    public $uploadRootDir;
+    protected $uploadRootDir;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)

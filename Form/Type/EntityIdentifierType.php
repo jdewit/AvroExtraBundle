@@ -32,19 +32,19 @@ class EntityIdentifierType extends AbstractType
      *
      * @return void
      */
-    public function __construct(ObjectManager $objectManager)
+    public function __construct($objectManager)
     {
         $this->objectManager = $objectManager;
     }
 
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        $builder->prependClientTransformer(new OneEntityToIdTransformer(
-            $this->objectManager->getEntityManager($options['em']),
-            $options['class'],
-            $options['property'],
-            $options['query_builder']
-        ));
+        //$builder->prependClientTransformer(new OneEntityToIdTransformer(
+            //$this->objectManager->getEntityManager($options['em']),
+            //$options['class'],
+            //$options['property'],
+            //$options['query_builder']
+        //));
     }
 
     public function setDefaultOptions(OptionsResolverInterface $resolver)
