@@ -5,7 +5,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Avro\ExtraBundle\Doctrine\MongoDB\Manager;
+namespace Avro\ExtraBundle\Document\Manager;
 
 use Avro\ExtraBundle\Doctrine\Common\Manager\BaseManager;
 
@@ -14,7 +14,7 @@ use Avro\ExtraBundle\Doctrine\Common\Manager\BaseManager;
  *
  * @author Joris de Wit <joris.w.dewit@gmail.com>
  */
-abstract class BaseMongoDBManager extends BaseManager
+abstract class DocumentManager extends BaseManager
 {
     /**
      * Find by as array
