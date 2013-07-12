@@ -52,6 +52,11 @@ abstract class BaseManager // implements BaseManagerInterface
         return $this->class;
     }
 
+    public function getRepository()
+    {
+        return $this->repository;
+    }
+
     /*
      * Flush the entity manager
      *
