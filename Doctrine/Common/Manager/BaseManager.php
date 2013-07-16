@@ -10,7 +10,7 @@ namespace Avro\ExtraBundle\Doctrine\Common\Manager;
 use Doctrine\Common\Persistence\ObjectManager;
 
 /**
- * Base Managing class for document managers
+ * Base Managing class for model managers
  *
  * @author Joris de Wit <joris.w.dewit@gmail.com>
  */
@@ -80,63 +80,63 @@ abstract class BaseManager // implements BaseManagerInterface
     {
         $class = $this->getClass();
 
-        $document = new $class();
+        $model = new $class();
 
-        return $document;
+        return $model;
     }
 
     /**
      * Persist a Document
      *
-     * @param object  $document
+     * @param object  $model
      * @param boolean $andFlush Flush om if true
      * @param boolean $andClear Clear om if true
      */
-    public function persist($document, $andFlush = true, $andClear = false)
+    public function persist($model, $andFlush = true, $andClear = false)
     {
-        if (!is_object($document)) {
+        if (!is_object($model)) {
             throw new \InvalidArgumentException('Cannot persist a non object');
         }
 
-        $this->om->persist($document);
+        $this->om->persist($model);
 
         if ($andFlush) {
             $this->flush($andClear);
         }
 
-        return $document;
+        return $model;
     }
 
     /**
      * Update a Document
      *
-     * @param object  $document
+     * @param object  $model
      * @param boolean $andFlush Flush om if true
      * @param boolean $andClear Clear om if true
      */
-    public function update($document, $andFlush = true, $andClear = false)
+    public function update($model, $andFlush = true, $andClear = false)
     {
-        if (!is_object($document)) {
+        if (!is_object($model)) {
             throw new \InvalidArgumentException('Cannot persist a non object');
         }
 
-        $this->om->persist($document);
+        $this->om->persist($model);
 
         if ($andFlush) {
             $this->flush($andClear);
         }
 
-        return $document;
+        return $model;
     }
 
     /**
      * Delete a Document
      *
-     * @param object $document
+     * @param object $model
      */
-    public function delete($document)
+    public function delete($model)
     {
-        $this->om->remove($document);
+        $this->om->remove($model);
 
         $this->om->flush();
 
@@ -144,7 +144,7 @@ abstract class BaseManager // implements BaseManagerInterface
     }
 
 //    /**
-//     * Find one document by criteria
+//     * Find one model by criteria
 //     *
 //     * @param  array  $criteria
 //     * @return object Document
@@ -153,17 +153,17 @@ abstract class BaseManager // implements BaseManagerInterface
 //    {
 //        $criteria = $this->filterCriteria($criteria);
 //
-//        $document = $this->repository->findOneBy($criteria);
+//        $model = $this->repository->findOneBy($criteria);
 //
-//        if (!is_object($document)) {
+//        if (!is_object($model)) {
 //            throw new FlashException('notice', sprintf('Error finding %s. Please try again.', $this->name));
 //        }
 //
-//        return $document;
+//        return $model;
 //    }
 //
 //    /**
-//     * Find one document by id
+//     * Find one model by id
 //     *
 //     * @param  string $id
 //     * @return object Document
@@ -179,7 +179,7 @@ abstract class BaseManager // implements BaseManagerInterface
 //    }
 //
 //    /**
-//     * Find documents by criteria
+//     * Find models by criteria
 //     *
 //     * @param  array $criteria
 //     * @param  array $orderBy
@@ -195,7 +195,7 @@ abstract class BaseManager // implements BaseManagerInterface
 //    }
 //
 //    /**
-//     * Find all documents
+//     * Find all models
 //     *
 //     * @return array Documents
 //     */

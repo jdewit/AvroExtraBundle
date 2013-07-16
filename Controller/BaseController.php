@@ -3,6 +3,7 @@
 namespace Avro\ExtraBundle\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\HttpFoundation\Request;
 
 /**
  * @author Joris de Wit <joris.w.dewit@gmail.com>
@@ -10,6 +11,57 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 class BaseController extends Controller
 {
 
+    /**
+     * Create a new model.
+     */
+    public function baseNewAction(Request $request)
+    {
+        $model = $this->createModel();
+
+        $form = $this->container->get(sprintf('%s.%s.form', $this->alias, $this->modelAlias));
+        $form->setData($model);
+
+        if ('POST' === $request->getMethod()) {
+            $form->bind($request);
+            if ($form->isValid()) {
+                return $this->persistModel($form->getData());
+            }
+        }
+
+        return array(
+            'form' => $form->createview(),
+        );
+    }
+
+    /**
+     * Base edit action
+     */
+    public function baseEditAction(Request $request, $model)
+    {
+        $form = $this->container->get(sprintf('%s.%s.form', $this->alias, $this->modelAlias));
+        $form->setData($model);
+
+        if ('POST' === $request->getMethod()) {
+            $form->bind($request);
+            if ($form->isValid()) {
+                return $this->updateModel($form->getData());
+            }
+        }
+
+        return array(
+            sprintf('%s', $this->modelAlias) => $model,
+            'form' => $form->createview(),
+        );
+    }
+
+    /**
+     * Base delete action
+     */
+    public function baseDeleteAction($model)
+    {
+        $modelManager = $this->getModelManager();
+        return $modelManager->delete($model);
+    }
 
     protected function setFlash($action, $value)
     {
@@ -19,7 +71,7 @@ class BaseController extends Controller
 
     public function getModelManager()
     {
-        return $this->get($this->modelManager);
+        return $this->get(sprintf('%s.%s.manager', $this->alias, $this->modelAlias));
     }
 
     public function createModel()
@@ -27,7 +79,7 @@ class BaseController extends Controller
         $manager = $this->getModelManager();
 
         $model = $manager->create();
-        $this->dispatchEvent('created', $model);
+        $this->dispatchEvent(sprintf('%s.%s.created', $this->alias, $this->modelAlias), $model);
 
         return $model;
     }
@@ -36,52 +88,36 @@ class BaseController extends Controller
     {
         $manager = $this->getModelManager();
 
-        $this->dispatchEvent('persist', $model);
+        $this->dispatchEvent(sprintf('%s.%s.persist', $this->alias, $this->modelAlias), $model);
 
         $model = $manager->persist($model);
 
-        $this->dispatchEvent('persisted', $model);
+        $this->dispatchEvent(sprintf('%s.%s.persisted', $this->alias, $this->modelAlias), $model);
 
         return $model;
     }
 
 
-    public function updateModel($resource)
+    public function updateModel($model)
     {
-        $manager = $this->getManager();
+        $manager = $this->getModelManager();
 
-        $this->dispatchEvent('pre_update', $resource);
-        $manager->persist($resource);
-        $this->dispatchEvent('update', $resource);
-        $manager->flush();
-        $this->dispatchEvent('post_update', $resource);
+        $this->dispatchEvent(sprintf('%s.%s.update', $this->alias, $this->modelAlias), $model);
+        $manager->update($model);
+        $this->dispatchEvent(sprintf('%s.%s.updated', $this->alias, $this->modelAlias), $model);
+
+        return $model;
     }
 
-    public function deleteModel($resource)
+    public function deleteModel($model)
     {
-        $manager = $this->get($this->modelManager);
+        $manager = $this->getModelManager();
 
-        $this->dispatchEvent('pre_delete', $resource);
-        $manager->remove($resource);
-        $this->dispatchEvent('delete', $resource);
-        $manager->flush();
-        $this->dispatchEvent('post_delete', $resource);
-    }
+        $this->dispatchEvent(sprintf('%s.%s.delete', $this->alias, $this->modelAlias), $model);
+        $manager->delete($model);
+        $this->dispatchEvent(sprintf('%s.%s.deleted', $this->alias, $this->modelAlias), $model);
 
-    public function persistAndFlush($resource)
-    {
-        $manager = $this->getManager();
-
-        $manager->persist($resource);
-        $manager->flush();
-    }
-
-    public function removeAndFlush($resource)
-    {
-        $manager = $this->getManager();
-
-        $manager->remove($resource);
-        $manager->flush();
+        return true;
     }
 
     public function dispatchEvent($name, $model)
@@ -91,5 +127,23 @@ class BaseController extends Controller
         $this->get('event_dispatcher')->dispatch($name, $event);
     }
 
-}
+    public function findModel($id)
+    {
+        $model = $this->getModelManager()->getRepository()->find($id);
 
+        if (!$model) {
+            $this->get('session')->getFlashBag()->set('error', sprintf('%s.%s.not_found', $this->alias, $this->modelAlias));
+
+            return new RedirectResponse($this->container->get('router')->generate('avro_blog_post_list'));
+        }
+
+        return $model;
+    }
+
+    public function findModelBySlug($slug)
+    {
+        $model = $this->getModelManager()->getRepository()->findOneBy(array('slug' => $slug));
+
+        return $model;
+    }
+}
