@@ -14,8 +14,23 @@ use Avro\ExtraBundle\Doctrine\Common\Manager\BaseManager;
  *
  * @author Joris de Wit <joris.w.dewit@gmail.com>
  */
-abstract class DocumentManager extends BaseManager
+class DocumentManager extends BaseManager
 {
+    public function __construct($om, $class)
+    {
+        parent::__construct($om, $class);
+    }
+
+    /**
+     * getQueryBuilder
+     *
+     * @return QueryBuilder
+     */
+    public function getQueryBuilder()
+    {
+        return $this->om->createQueryBuilder($this->class);
+    }
+
     /**
      * Find by as array
      *
@@ -25,7 +40,7 @@ abstract class DocumentManager extends BaseManager
      */
     public function findByAsArray($criterias, array $fields = array())
     {
-        $qb = $this->om->createQueryBuilder($this->class);
+        $qb = $this->getQueryBuilder();
 
         foreach ($criterias as $k => $v) {
             $qb->field($k)->equals($v);
