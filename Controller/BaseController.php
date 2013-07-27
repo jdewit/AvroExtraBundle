@@ -30,13 +30,6 @@ class BaseController extends Controller
     protected $listCount = 10;
 
     /**
-     * The models event class
-     *
-     * @var string
-     */
-    protected $eventClass = 'Avro\ExtraBundle\Event\ModelEvent';
-
-    /**
      * dbDriver
      *
      * @var string
@@ -84,7 +77,11 @@ class BaseController extends Controller
             if ($form->isValid()) {
                 $this->persistModel($form->getData());
 
-                return $this->redirect($this->generateUrl(sprintf('%s_%s_list', $this->bundleAlias, $this->modelAlias)));
+                $request->getSession()->getFlashBag()->set('success', sprintf('%s.new.flash.success', $this->modelAlias));
+
+                return $this->resolveRedirect('list');
+            } else {
+                $request->getSession()->getFlashBag()->set('error', sprintf('%s.new.flash.error', $this->modelAlias));
             }
         }
 
@@ -108,7 +105,11 @@ class BaseController extends Controller
             if ($form->isValid()) {
                 $this->updateModel($form->getData());
 
+                $request->getSession()->getFlashBag()->set('success', sprintf('%s.new.flash.success', $this->modelAlias));
+
                 return $this->redirect($this->generateUrl(sprintf('%s_%s_list', $this->bundleAlias, $this->modelAlias)));
+            } else {
+                $request->getSession()->getFlashBag()->set('error', sprintf('%s.new.flash.error', $this->modelAlias));
             }
         }
 
@@ -171,8 +172,10 @@ class BaseController extends Controller
      */
     public function getModelManager()
     {
-        if ($this->modelManager) {
-            return $this->get($this->modelManager);
+        $modelManagerAlias = sprintf('%s.%s.manager', $this->bundleAlias, $this->modelAlias);
+
+        if ($this->container->has($modelManagerAlias)) {
+            return $this->get($modelManagerAlias);
         } else {
             switch ($this->dbDriver) {
                 case 'mongodb':
@@ -186,7 +189,7 @@ class BaseController extends Controller
 
             }
 
-            return new $modelManagerClass($this->get($objectManager), $this->getModelClass());
+            return new $modelManagerClass($this->get($objectManager), $this->get('event_dispatcher'), $this->getModelClass());
         }
     }
 
@@ -194,7 +197,7 @@ class BaseController extends Controller
     {
         $formType = sprintf('%sBundle\\Form\\Type\\%sFormType', str_replace(' ', '\\', ucwords(str_replace('_', ' ', $this->bundleAlias))), ucfirst($this->modelAlias));
 
-        return $this->createForm(new $formType($this->getModelClass(), $model));
+        return $this->createForm(new $formType($this->getModelClass()), $model);
     }
 
     public function createModel()
@@ -202,7 +205,6 @@ class BaseController extends Controller
         $manager = $this->getModelManager();
 
         $model = $manager->create();
-        $this->dispatchEvent(sprintf('%s.%s.created', $this->bundleAlias, $this->modelAlias), $model);
 
         return $model;
     }
@@ -211,11 +213,7 @@ class BaseController extends Controller
     {
         $manager = $this->getModelManager();
 
-        $this->dispatchEvent(sprintf('%s.%s.persist', $this->bundleAlias, $this->modelAlias), $model);
-
         $model = $manager->persist($model);
-
-        $this->dispatchEvent(sprintf('%s.%s.persisted', $this->bundleAlias, $this->modelAlias), $model);
 
         return $model;
     }
@@ -225,9 +223,7 @@ class BaseController extends Controller
     {
         $manager = $this->getModelManager();
 
-        $this->dispatchEvent(sprintf('%s.%s.update', $this->bundleAlias, $this->modelAlias), $model);
         $manager->update($model);
-        $this->dispatchEvent(sprintf('%s.%s.updated', $this->bundleAlias, $this->modelAlias), $model);
 
         return $model;
     }
@@ -236,18 +232,21 @@ class BaseController extends Controller
     {
         $manager = $this->getModelManager();
 
-        $this->dispatchEvent(sprintf('%s.%s.delete', $this->bundleAlias, $this->modelAlias), $model);
         $manager->delete($model);
-        $this->dispatchEvent(sprintf('%s.%s.deleted', $this->bundleAlias, $this->modelAlias), $model);
 
         return true;
     }
 
-    public function dispatchEvent($name, $model)
-    {
-        $event = new $this->eventClass($model);
 
-        $this->get('event_dispatcher')->dispatch($name, $event);
+    private function resolveRedirect($action, array $routeParameters = array())
+    {
+        $redirectRoute = $this->get('request')->request->get('redirect_route');
+
+        if (empty($redirectRoute)) {
+            return $this->redirect($this->generateUrl(sprintf('%s_%s_%s', $this->bundleAlias, $this->modelAlias, $action)));
+        } else {
+            return $this->redirect($this->generateUrl($redirectRoute));
+        }
     }
 
     public function findModel($id)

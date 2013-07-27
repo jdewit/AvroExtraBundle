@@ -1,8 +1,8 @@
 <?php
 
-use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
-
 namespace Avro\ExtraBundle\Document\Traits;
+
+use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 
 trait Address
 {
@@ -24,7 +24,7 @@ trait Address
     /**
      * @ODM\String
      */
-    protected $zipCode;
+    protected $code;
 
     /**
      * @ODM\String
@@ -57,8 +57,8 @@ trait Address
                 }
             }
 
-            if ($this->zipCode) {
-                $address .= ', '.$this->zipCode;
+            if ($this->code) {
+                $address .= ', '.$this->code;
             }
 
             if ($this->country) {
@@ -91,14 +91,14 @@ trait Address
         return $this;
     }
 
-    public function getZipCode()
+    public function getCode()
     {
-        return $this->zipCode;
+        return $this->code;
     }
 
-    public function setZipCode($zipCode)
+    public function setCode($code)
     {
-        $this->zipCode = $zipCode;
+        $this->code = $code;
         return $this;
     }
 

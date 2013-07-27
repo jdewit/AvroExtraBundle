@@ -18,30 +18,46 @@ abstract class BaseManager // implements BaseManagerInterface
 {
     /**
      * DocumentManager
-     *
-     * @var mixed
      */
     protected $om;
 
     /**
+     * EventDispatcher
+     */
+    protected $dispatcher;
+
+    /**
      * The class namespace
-     *
-     * @var mixed
      */
     protected $class;
 
     /**
-     * Document repository
-     *
-     * @var mixed
+     * Doctrine repository
      */
     protected $repository;
 
-    public function __construct(ObjectManager $om, $class)
+    /**
+     * bundleAlias
+     */
+    protected $bundleAlias;
+
+    /**
+     * modelAlias
+     */
+    protected $modelAlias;
+
+    public function __construct(ObjectManager $om, $dispatcher, $class, $eventClass = 'Avro\ExtraBundle\Event\ModelEvent')
     {
         $this->om = $om;
+        $this->dispatcher = $dispatcher;
         $this->class = $class;
+        $this->eventClass = $eventClass;
         $this->repository = $om->getRepository($class);
+
+        $paths = explode('\\', $class);
+
+        $this->bundleAlias = sprintf('%s_%s', lcfirst($paths[0]), lcfirst(str_replace('Bundle', '', $paths[1])));
+        $this->modelAlias = lcfirst($paths[3]);
     }
 
     /**
@@ -55,6 +71,13 @@ abstract class BaseManager // implements BaseManagerInterface
     public function getRepository()
     {
         return $this->repository;
+    }
+
+    private function dispatchEvent($name, $model)
+    {
+        $event = new $this->eventClass($model);
+
+        $this->dispatcher->dispatch($name, $event);
     }
 
     /*
@@ -82,6 +105,8 @@ abstract class BaseManager // implements BaseManagerInterface
 
         $model = new $class();
 
+        $this->dispatchEvent(sprintf('%s.%s.created', $this->bundleAlias, $this->modelAlias), $model);
+
         return $model;
     }
 
@@ -98,11 +123,15 @@ abstract class BaseManager // implements BaseManagerInterface
             throw new \InvalidArgumentException('Cannot persist a non object');
         }
 
+        $this->dispatchEvent(sprintf('%s.%s.persist', $this->bundleAlias, $this->modelAlias), $model);
+
         $this->om->persist($model);
 
         if ($andFlush) {
             $this->flush($andClear);
         }
+
+        $this->dispatchEvent(sprintf('%s.%s.persisted', $this->bundleAlias, $this->modelAlias), $model);
 
         return $model;
     }
@@ -120,11 +149,15 @@ abstract class BaseManager // implements BaseManagerInterface
             throw new \InvalidArgumentException('Cannot persist a non object');
         }
 
+        $this->dispatchEvent(sprintf('%s.%s.update', $this->bundleAlias, $this->modelAlias), $model);
+
         $this->om->persist($model);
 
         if ($andFlush) {
             $this->flush($andClear);
         }
+
+        $this->dispatchEvent(sprintf('%s.%s.updated', $this->bundleAlias, $this->modelAlias), $model);
 
         return $model;
     }
@@ -133,12 +166,19 @@ abstract class BaseManager // implements BaseManagerInterface
      * Delete a Document
      *
      * @param object $model
+     * @param boolean $andFlush Flush ObjectManager
      */
-    public function delete($model)
+    public function delete($model, $andFlush = true)
     {
+        $this->dispatchEvent(sprintf('%s.%s.delete', $this->bundleAlias, $this->modelAlias), $model);
+
         $this->om->remove($model);
 
-        $this->om->flush();
+        if ($this->andFlush) {
+            $this->om->flush();
+        }
+
+        $this->dispatchEvent(sprintf('%s.%s.deleted', $this->bundleAlias, $this->modelAlias), $model);
 
         return true;
     }

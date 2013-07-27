@@ -9,7 +9,7 @@ trait Contact
     /**
      * @ODM\String
      */
-    protected $homePhone;
+    protected $phone;
 
     /**
      * @ODM\String
@@ -43,14 +43,14 @@ trait Contact
 		return $gravUrl = 'http://www.gravatar.com/avatar/' . md5( strtolower( trim( $this->email ) ) ) . '?d=mm&s=16&r=PG';
 	}
 
-    public function getHomePhone()
+    public function getPhone()
     {
-        return $this->homePhone;
+        return $this->phone;
     }
 
-    public function setHomePhone($homePhone)
+    public function setPhone($phone)
     {
-        $this->homePhone = $homePhone;
+        $this->phone = $phone;
         return $this;
     }
 
@@ -101,8 +101,8 @@ trait Contact
     {
         $contactInfo = '';
 
-        if ($this->homePhone) {
-            $contactInfo .= $this->homePhone;
+        if ($this->phone) {
+            $contactInfo .= $this->phone;
         };
 
         if ($this->cellPhone) {
