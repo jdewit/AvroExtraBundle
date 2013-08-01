@@ -4,6 +4,8 @@ namespace Avro\ExtraBundle\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Form\Form;
 
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 
@@ -17,6 +19,8 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
  *
  * $modelAlias
  * $bundleAlias
+ *
+ *
  *
  * @author Joris de Wit <joris.w.dewit@gmail.com>
  */
@@ -37,26 +41,51 @@ class BaseController extends Controller
     protected $dbDriver = 'mongodb';
 
     /**
-     * The modelManager service id
-     *
-     * The default modelManager is used if set to false
-     *
-     * @var string
+     * modelName
      */
-    protected $modelManager = false;
+    protected $modelName = false;
+
+    /**
+     * formTypeClass
+     */
+    protected $formTypeClass = false;
+
+    /**
+     * redirectRoute
+     */
+    protected $redirectRoute = false;
+
+    /**
+     * template
+     */
+    protected $template = false;
+
+    /**
+     * useSessions
+     */
+    protected $useSessions = true;
 
     /**
      * List models.
      *
      * @Template
      */
-    public function baseListAction(Request $request)
+    public function baseListAction(Request $request, $query = false, $modelAlias = false)
     {
+        if (false === $modelAlias) {
+            $modelAlias = $this->modelAlias;
+        }
+
+        if (!$query) {
+            $query = $this->getModelManager()->getQueryBuilder()->hydrate(false)->getQuery();
+        }
+
         return $this->get('templating')->renderResponse($this->getTemplate('list'), array(
-           'pagination' => $this->get('knp_paginator')->paginate(
-                               $this->getModelManager()->getQueryBuilder()->hydrate(false)->getQuery(),
-                               $request->query->get('page', 1),
-                               $this->listCount
+            'modelAlias' => $modelAlias,
+            'pagination' => $this->get('knp_paginator')->paginate(
+                                $query,
+                                $request->query->get('page', 1),
+                                $this->listCount
                            )
             )
         );
@@ -66,22 +95,45 @@ class BaseController extends Controller
      * Create a new model.
      *
      */
-    public function baseNewAction(Request $request)
+    public function baseNewAction(Request $request, $prePersistCallback = false, $postPersistCallback = false, $formErrorCallback = false)
     {
-        $model = $this->createModel();
+        $modelManager = $this->getModelManager();
+        $model = $modelManager->create();
 
         $form = $this->getForm($model);
 
         if ('POST' === $request->getMethod()) {
             $form->bind($request);
             if ($form->isValid()) {
-                $this->persistModel($form->getData());
+                $model = $form->getData();
 
-                $request->getSession()->getFlashBag()->set('success', sprintf('%s.new.flash.success', $this->modelAlias));
+                if ($prePersistCallback) {
+                    $model = $prePersistCallback($request, $model);
+                }
 
-                return $this->resolveRedirect('list');
+                $modelManager->persist($model);
+
+                $this->addFlash('success', 'new');
+
+                if ($postPersistCallback) {
+                    return $postPersistCallback($request, $model);
+                } else {
+                    return $this->resolveRedirect('list');
+                }
             } else {
-                $request->getSession()->getFlashBag()->set('error', sprintf('%s.new.flash.error', $this->modelAlias));
+                if ($request->isXmlHttpRequest()) {
+                    $response = new Response(json_encode(array(
+                        'status' => 'ERROR',
+                        'errors' => $this->getFormErrors($form),
+                        'form_name' => sprintf('%s_%s', $this->bundleAlias, $this->modelName ? lcfirst($this->modelName) : $this->modelAlias)
+                    )));
+
+                    $response->headers->set('Content-Type', 'application/json');
+
+                    return $response;
+                } else {
+                    $this->addFlash('error', 'edit');
+                }
             }
         }
 
@@ -103,13 +155,13 @@ class BaseController extends Controller
         if ('POST' === $request->getMethod()) {
             $form->bind($request);
             if ($form->isValid()) {
-                $this->updateModel($form->getData());
+                $this->getModelManager()->update($form->getData());
 
-                $request->getSession()->getFlashBag()->set('success', sprintf('%s.new.flash.success', $this->modelAlias));
+                $this->addFlash('success', 'edit');
 
-                return $this->redirect($this->generateUrl(sprintf('%s_%s_list', $this->bundleAlias, $this->modelAlias)));
+                return $this->redirect($this->generateUrl($this->redirectRoute ? $this->redirectRoute : sprintf('%s_%s_list', $this->bundleAlias, $this->modelAlias)));
             } else {
-                $request->getSession()->getFlashBag()->set('error', sprintf('%s.new.flash.error', $this->modelAlias));
+                $this->addFlash('error', 'edit');
             }
         }
 
@@ -127,21 +179,22 @@ class BaseController extends Controller
     {
         $modelManager = $this->getModelManager();
 
-        $model = $modelManager->getRepository()->find($id);
+        $model = $modelManager->find($id);
 
-        $modelManager->delete($model);
+        try {
+            $modelManager->delete($model);
+
+            $this->addFlash('success', 'delete');
+        } catch(\Exception $e) {
+            $this->addFlash('error', 'delete');
+        }
 
         return $this->redirect($this->generateUrl(sprintf('%s_%s_list', $this->bundleAlias, $this->modelAlias)));
     }
 
-    protected function setFlash($action, $value)
-    {
-        $this->get('session')->setFlash($action, $value);
-    }
-
     private function getTemplate($name)
     {
-        return sprintf('%sBundle:%s:%s.html.twig', str_replace(' ', '', ucwords(str_replace('_', ' ', $this->bundleAlias))), ucfirst($this->modelAlias), $name);
+        return $this->template ? $this->template : sprintf('%sBundle:%s:%s.html.twig', str_replace(' ', '', ucwords(str_replace('_', ' ', $this->bundleAlias))), $this->modelName ? $this->modelName : ucfirst($this->modelAlias), $name);
     }
 
     /**
@@ -162,7 +215,11 @@ class BaseController extends Controller
      */
     private function getModelClass()
     {
-        return sprintf('%sBundle\\Document\\%s', str_replace(' ', '\\', ucwords(str_replace('_', ' ', $this->bundleAlias))), ucfirst($this->modelAlias));
+        if ($this->modelName) {
+            return sprintf('%sBundle\\Document\\%s', str_replace(' ', '\\', ucwords(str_replace('_', ' ', $this->bundleAlias))), ucfirst($this->modelName));
+        } else {
+            return sprintf('%sBundle\\Document\\%s', str_replace(' ', '\\', ucwords(str_replace('_', ' ', $this->bundleAlias))), ucfirst($this->modelAlias));
+        }
     }
 
     /**
@@ -180,7 +237,7 @@ class BaseController extends Controller
             switch ($this->dbDriver) {
                 case 'mongodb':
                     $objectManager = 'doctrine.odm.mongodb.document_manager';
-                    $modelManagerClass = 'Avro\ExtraBundle\Document\Manager\DocumentManager';
+                    $modelManagerClass = 'Avro\ExtraBundle\Doctrine\MongoDB\Manager\MongoDBManager';
                     break;
                 case 'orm':
                     $objectManager = 'doctrine.orm.entity_manager';
@@ -195,48 +252,69 @@ class BaseController extends Controller
 
     public function getForm($model)
     {
-        $formType = sprintf('%sBundle\\Form\\Type\\%sFormType', str_replace(' ', '\\', ucwords(str_replace('_', ' ', $this->bundleAlias))), ucfirst($this->modelAlias));
+        if (!$this->formTypeClass) {
+            $this->formTypeClass = sprintf('%sBundle\\Form\\Type\\%sFormType', str_replace(' ', '\\', ucwords(str_replace('_', ' ', $this->bundleAlias))), $this->modelName ? $this->modelName : ucfirst($this->modelAlias));
+        }
 
-        return $this->createForm(new $formType($this->getModelClass()), $model);
+        return $this->createForm(new $this->formTypeClass($this->getModelClass()), $model);
     }
 
-    public function createModel()
+    /**
+     * getFormErrors
+     *
+     * @param Form $form
+     * @return array
+     */
+    private function getFormErrors(Form $form) {
+        $errors = array();
+        foreach ($form->getErrors() as $key => $error) {
+            $template = $error->getMessageTemplate();
+            $parameters = $error->getMessageParameters();
+
+            foreach ($parameters as $var => $value) {
+                $template = str_replace($var, $value, $template);
+            }
+
+            $errors[$key] = $template;
+        }
+        if ($form->count()) {
+            foreach ($form as $child) {
+                if (!$child->isValid()) {
+                    $errors[$child->getName()] = $this->getFormErrors($child);
+                }
+            }
+        }
+        return $errors;
+    }
+
+    public function getPagination($request, $query) {
+        return $this->get('knp_paginator')->paginate($query, $request->query->get('page', 1), $request->query->get('count', $this->listCount));
+    }
+
+    /**
+     * getBundleShortName
+     *
+     * @return string
+     */
+    private function getBundleShortName()
     {
-        $manager = $this->getModelManager();
-
-        $model = $manager->create();
-
-        return $model;
+        return sprintf('%s%s', ucfirst(str_replace('_', '', $this->bundleAlias)), ucfirst($this->modelAlias));
     }
 
-    public function persistModel($model)
-    {
-        $manager = $this->getModelManager();
-
-        $model = $manager->persist($model);
-
-        return $model;
+    /**
+     * addFlash
+     *
+     * @param string $status The flash status
+     * @param string $alias The flash alias
+     */
+    private function addFlash($status, $alias) {
+        if (true === $this->useSessions) {
+            $this->get('session')->getFlashBag()->add(
+                $status,
+                $this->get('translator')->trans(sprintf('%s.%s.flash.%s', $this->modelAlias, $alias, $status)), array(), $this->getBundleShortName()
+            );
+        }
     }
-
-
-    public function updateModel($model)
-    {
-        $manager = $this->getModelManager();
-
-        $manager->update($model);
-
-        return $model;
-    }
-
-    public function deleteModel($model)
-    {
-        $manager = $this->getModelManager();
-
-        $manager->delete($model);
-
-        return true;
-    }
-
 
     private function resolveRedirect($action, array $routeParameters = array())
     {
