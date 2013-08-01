@@ -46,6 +46,11 @@ abstract class BaseManager // implements BaseManagerInterface
      */
     protected $modelAlias;
 
+    /**
+     * criteria
+     */
+    protected $criteria = array();
+
     public function __construct(ObjectManager $om, $dispatcher, $class, $eventClass = 'Avro\ExtraBundle\Event\ModelEvent')
     {
         $this->om = $om;
@@ -73,11 +78,15 @@ abstract class BaseManager // implements BaseManagerInterface
         return $this->repository;
     }
 
-    private function dispatchEvent($name, $model)
+    /**
+     * dispatchEvent
+     *
+     * @param string $action
+     * @param Object $model
+     */
+    private function dispatchEvent($action, $model)
     {
-        $event = new $this->eventClass($model);
-
-        $this->dispatcher->dispatch($name, $event);
+        $this->dispatcher->dispatch(sprintf('%s.%s.%s', $this->bundleAlias, $this->modelAlias, $action), new $this->eventClass($model));
     }
 
     /*
@@ -105,7 +114,7 @@ abstract class BaseManager // implements BaseManagerInterface
 
         $model = new $class();
 
-        $this->dispatchEvent(sprintf('%s.%s.created', $this->bundleAlias, $this->modelAlias), $model);
+        $this->dispatchEvent('post_create', $model);
 
         return $model;
     }
@@ -123,7 +132,7 @@ abstract class BaseManager // implements BaseManagerInterface
             throw new \InvalidArgumentException('Cannot persist a non object');
         }
 
-        $this->dispatchEvent(sprintf('%s.%s.persist', $this->bundleAlias, $this->modelAlias), $model);
+        $this->dispatchEvent('pre_persist', $model);
 
         $this->om->persist($model);
 
@@ -131,7 +140,7 @@ abstract class BaseManager // implements BaseManagerInterface
             $this->flush($andClear);
         }
 
-        $this->dispatchEvent(sprintf('%s.%s.persisted', $this->bundleAlias, $this->modelAlias), $model);
+        $this->dispatchEvent('post_persist', $model);
 
         return $model;
     }
@@ -149,7 +158,7 @@ abstract class BaseManager // implements BaseManagerInterface
             throw new \InvalidArgumentException('Cannot persist a non object');
         }
 
-        $this->dispatchEvent(sprintf('%s.%s.update', $this->bundleAlias, $this->modelAlias), $model);
+        $this->dispatchEvent('pre_update', $model);
 
         $this->om->persist($model);
 
@@ -157,7 +166,7 @@ abstract class BaseManager // implements BaseManagerInterface
             $this->flush($andClear);
         }
 
-        $this->dispatchEvent(sprintf('%s.%s.updated', $this->bundleAlias, $this->modelAlias), $model);
+        $this->dispatchEvent('post_update', $model);
 
         return $model;
     }
@@ -170,54 +179,64 @@ abstract class BaseManager // implements BaseManagerInterface
      */
     public function delete($model, $andFlush = true)
     {
-        $this->dispatchEvent(sprintf('%s.%s.delete', $this->bundleAlias, $this->modelAlias), $model);
+        $this->dispatchEvent('pre_delete', $model);
 
         $this->om->remove($model);
 
-        if ($this->andFlush) {
+        if ($andFlush) {
             $this->om->flush();
         }
 
-        $this->dispatchEvent(sprintf('%s.%s.deleted', $this->bundleAlias, $this->modelAlias), $model);
+        $this->dispatchEvent('post_delete', $model);
 
         return true;
     }
 
-//    /**
-//     * Find one model by criteria
-//     *
-//     * @param  array  $criteria
-//     * @return object Document
-//     */
-//    public function findOneBy(array $criteria)
-//    {
-//        $criteria = $this->filterCriteria($criteria);
-//
-//        $model = $this->repository->findOneBy($criteria);
-//
-//        if (!is_object($model)) {
-//            throw new FlashException('notice', sprintf('Error finding %s. Please try again.', $this->name));
-//        }
-//
-//        return $model;
-//    }
-//
-//    /**
-//     * Find one model by id
-//     *
-//     * @param  string $id
-//     * @return object Document
-//     */
-//    public function find($id)
-//    {
-//        if (!$id) {
-//            throw new \InvalidArgumentException('Id must be specified.');
-//        }
-//        $criteria['id'] = $id;
-//
-//        return $this->findOneBy($criteria);
-//    }
-//
+    /**
+     * Find one model by criteria
+     *
+     * @param  array  $criteria
+     * @return object Document
+     */
+    public function findOneBy(array $criteria)
+    {
+        $criteria = array_merge($criteria, $this->getCriteria());
+
+        $model = $this->repository->findOneBy($criteria);
+
+        if (!is_object($model)) {
+            throw new FlashException('notice', sprintf('Error finding %s. Please try again.', $this->name));
+        }
+
+        return $model;
+    }
+
+    /**
+     * Find one model by id
+     *
+     * @param  string $id
+     * @return object Document
+     */
+    public function find($id)
+    {
+        if (!$id) {
+            throw new \InvalidArgumentException('Id must be specified.');
+        }
+
+        return $this->findOneBy(array('id' => $id));
+    }
+
+    public function getCriteria()
+    {
+        return $this->criteria;
+    }
+
+    public function setCriteria($criteria)
+    {
+        $this->criteria = $criteria;
+        return $this;
+    }
+
 //    /**
 //     * Find models by criteria
 //     *
@@ -268,8 +287,8 @@ abstract class BaseManager // implements BaseManagerInterface
 //        return array_values($objects->toArray());
 //    }
 //
-//    public function getQueryBuilder()
-//    {
-//        return $this->om->createQueryBuilder($this->class);
-//    }
+    public function getQueryBuilder()
+    {
+        return $this->om->createQueryBuilder($this->class);
+    }
 }
