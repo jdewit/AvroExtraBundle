@@ -5,6 +5,7 @@ namespace Avro\ExtraBundle\Controller;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Form\Form;
 
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
@@ -102,13 +103,13 @@ class BaseController extends Controller
 
         $form = $this->getForm($model);
 
-        if ('POST' === $request->getMethod()) {
+        if ('POST' === $request->getMethod() || 'PUT' === $request->getMethod()) {
             $form->bind($request);
             if ($form->isValid()) {
                 $model = $form->getData();
 
                 if ($prePersistCallback) {
-                    $model = $prePersistCallback($request, $model);
+                    $model = $prePersistCallback($model, $form);
                 }
 
                 $modelManager->persist($model);
@@ -116,9 +117,21 @@ class BaseController extends Controller
                 $this->addFlash('success', 'new');
 
                 if ($postPersistCallback) {
-                    return $postPersistCallback($request, $model);
+                    return $postPersistCallback($model, $form);
                 } else {
-                    return $this->resolveRedirect('list');
+                    if ($request->isXmlHttpRequest()) {
+                        $response = new Response(json_encode(array(
+                            'status' => 'SUCCESS',
+                            'message' => $this->get('translator')->trans(sprintf('%s.new.flash.success', $this->modelAlias), array(), $this->getBundleShortName()),
+                            'data' => $model->toArray()
+                        )));
+
+                        $response->headers->set('Content-Type', 'application/json');
+
+                        return $response;
+                    } else {
+                        return $this->resolveRedirect('list');
+                    }
                 }
             } else {
                 if ($request->isXmlHttpRequest()) {
@@ -146,20 +159,46 @@ class BaseController extends Controller
     /**
      * Base edit action
      */
-    public function baseEditAction(Request $request, $id)
+    public function baseEditAction(Request $request, $id, $prePersistCallback = false, $postPersistCallback = false)
     {
         $model = $this->getModel($id);
 
+        if (empty($model)) {
+            throw new NotFoundHttpException(sprintf('%s not found. Please try again.', $this->modelAlias));
+        }
+
         $form = $this->getForm($model);
 
-        if ('POST' === $request->getMethod()) {
+        if ('POST' === $request->getMethod() || 'PATCH' === $request->getMethod()) {
             $form->bind($request);
             if ($form->isValid()) {
-                $this->getModelManager()->update($form->getData());
+                $model = $form->getData();
+
+                if ($prePersistCallback) {
+                    $model = $prePersistCallback($model, $form);
+                }
+
+                $this->getModelManager()->update($model);
 
                 $this->addFlash('success', 'edit');
 
-                return $this->redirect($this->generateUrl($this->redirectRoute ? $this->redirectRoute : sprintf('%s_%s_list', $this->bundleAlias, $this->modelAlias)));
+                if ($postPersistCallback) {
+                    return $postPersistCallback($model, $form);
+                } else {
+                    if ($request->isXmlHttpRequest()) {
+                        $response = new Response(json_encode(array(
+                            'status' => 'SUCCESS',
+                            'message' => $this->get('translator')->trans(sprintf('%s.new.flash.success', $this->modelAlias), array(), $this->getBundleShortName()),
+                            'data' => $model->toArray()
+                        )));
+
+                        $response->headers->set('Content-Type', 'application/json');
+
+                        return $response;
+                    } else {
+                        return $this->resolveRedirect('list');
+                    }
+                }
             } else {
                 $this->addFlash('error', 'edit');
             }
@@ -308,7 +347,7 @@ class BaseController extends Controller
      * @param string $alias The flash alias
      */
     private function addFlash($status, $alias) {
-        if (true === $this->useSessions) {
+        if (!$this->disableFlashMessages) {
             $this->get('session')->getFlashBag()->add(
                 $status,
                 $this->get('translator')->trans(sprintf('%s.%s.flash.%s', $this->modelAlias, $alias, $status)), array(), $this->getBundleShortName()
