@@ -202,13 +202,7 @@ abstract class BaseManager // implements BaseManagerInterface
     {
         $criteria = array_merge($criteria, $this->getCriteria());
 
-        $model = $this->repository->findOneBy($criteria);
-
-        if (!is_object($model)) {
-            throw new FlashException('notice', sprintf('Error finding %s. Please try again.', $this->name));
-        }
-
-        return $model;
+        return $this->repository->findOneBy($criteria);
     }
 
     /**
@@ -237,31 +231,31 @@ abstract class BaseManager // implements BaseManagerInterface
         return $this;
     }
 
-//    /**
-//     * Find models by criteria
-//     *
-//     * @param  array $criteria
-//     * @param  array $orderBy
-//     * @param  mixed $limit
-//     * @param  mixed $offset
-//     * @return array Documents
-//     */
-//    public function findBy(array $criteria, array $orderBy = array(), $limit = null, $offset = null)
-//    {
-//        $criteria = $this->filterCriteria($criteria);
-//
-//        return $this->repository->findBy($criteria, $orderBy, $limit, $offset);
-//    }
-//
-//    /**
-//     * Find all models
-//     *
-//     * @return array Documents
-//     */
-//    public function findAll()
-//    {
-//        return $this->repository->findAll();
-//    }
+    /**
+     * Find models by criteria
+     *
+     * @param  array $criteria
+     * @param  array $orderBy
+     * @param  mixed $limit
+     * @param  mixed $offset
+     * @return array Documents
+     */
+    public function findBy(array $criteria, array $orderBy = array(), $limit = null, $offset = null)
+    {
+        $criteria = array_merge($criteria, $this->getCriteria());
+
+        return $this->repository->findBy($criteria, $orderBy, $limit, $offset);
+    }
+
+    /**
+     * Find all models
+     *
+     * @return array Documents
+     */
+    public function findAll()
+    {
+        return $this->repository->findAll();
+    }
 //
 //    /**
 //     * Find all as array

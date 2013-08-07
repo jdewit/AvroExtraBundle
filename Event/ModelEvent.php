@@ -8,7 +8,6 @@
 namespace Avro\ExtraBundle\Event;
 
 use Symfony\Component\EventDispatcher\Event;
-use Symfony\Component\HttpFoundation\Request;
 
 class ModelEvent extends Event
 {
@@ -25,19 +24,5 @@ class ModelEvent extends Event
     public function getModel()
     {
         return $this->model;
-    }
-
-
-    /**
-     * setRedirectRoute
-     *
-     * Allows for redirecting from inside a listener
-     *
-     * @param Request $request
-     * @param string $redirectRoute
-     */
-    public function setRedirectRoute(Request $request, $redirectRoute)
-    {
-        $request->request->request->set('redirect_route', $redirectRoute);
     }
 }
