@@ -84,7 +84,7 @@ abstract class BaseManager // implements BaseManagerInterface
      * @param string $action
      * @param Object $model
      */
-    private function dispatchEvent($action, $model)
+    public function dispatchEvent($action, $model)
     {
         $this->dispatcher->dispatch(sprintf('%s.%s.%s', $this->bundleAlias, $this->modelAlias, $action), new $this->eventClass($model));
     }
@@ -94,7 +94,7 @@ abstract class BaseManager // implements BaseManagerInterface
      *
      * @param boolean $andClear Clears instances of this class from the entity manager
      */
-    private function flush($andClear)
+    public function flush($andClear = false)
     {
         $this->om->flush();
 
