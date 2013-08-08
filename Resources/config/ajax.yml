@@ -1,6 +1,0 @@
-services:
-    avro_extra.ajax.listener:
-        class: Avro\ExtraBundle\Listener\AjaxAuthenticationListener
-        tags:
-          - { name: kernel.event_listener, event: kernel.exception, method: onAccessDeniedException, priority: 1000 }
-
