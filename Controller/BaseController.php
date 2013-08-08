@@ -64,7 +64,7 @@ class BaseController extends Controller
     /**
      * useSessions
      */
-    protected $useSessions = true;
+    protected $disableFlashMessages = false;
 
     /**
      * List models.
