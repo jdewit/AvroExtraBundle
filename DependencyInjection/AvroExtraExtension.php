@@ -30,11 +30,14 @@ class AvroExtraExtension extends Extension
         if ($config['form']) {
             $loader->load('form.yml');
         }
-        if ($config['ajax']) {
-            $loader->load('ajax.yml');
+        if ($config['ajax_authentication']) {
+            $loader->load('ajax_authentication.yml');
         }
         if ($config['exception']) {
             $loader->load('exception.yml');
+        }
+        if ($config['param_converter']) {
+            $loader->load('param_converter.yml');
         }
     }
 }

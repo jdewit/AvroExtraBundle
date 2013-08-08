@@ -1,0 +1,6 @@
+services:
+    avro_extra.securityContextUser.param_converter:
+        class: Avro\ExtraBundle\Request\ParamConverter\SecurityContextUserParamConverter
+        arguments: ["@security.context"]
+        tags:
+            - {name: request.param_converter, converter: user, priority: 10}
