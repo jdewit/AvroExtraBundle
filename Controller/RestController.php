@@ -12,45 +12,31 @@ use Symfony\Component\DependencyInjection\ContainerAware;
 /**
  * A base rest controller
  *
- * REQUIREMENTS
- * ------------
- *
- * You must set the following variables in the child controller
- *
- * $modelAlias
- * $bundleAlias
- *
- *
- *
  * @author Joris de Wit <joris.w.dewit@gmail.com>
  */
 class RestController extends CommonController
 {
-
     public function unauthorizedResponse()
     {
         return new JsonResponse(array(
+            'code' => 'unauthorized',
             'message' => 'You are not authorized to perform this action'
         ), 403);
     }
 
-    public function handleDeleteRequest($id)
+    public function invalidDataResponse($errors)
     {
-        $modelManager = $this->getModelManager();
-
-        $model = $modelManager->find($id);
-
-        if (empty($model)) {
-            return new JsonResponse(array(
-                'message' => sprintf('%s not found', ucfirst($this->modelName))
-            ), 400);
-        }
-
-        $modelManager->delete($model);
-
         return new JsonResponse(array(
-            'message' => sprintf('%s deleted.', ucfirst($this->modelName))
-        ));
+            'code' => 'invalid_data',
+            'errors' => $errors
+        ), 400) ;
     }
 
+    public function notFoundResponse($name)
+    {
+        return new JsonResponse(array(
+            'code' => sprintf('%s_not_found', $name),
+            'message' => 'Office not found.'
+        ), 400);
+    }
 }
