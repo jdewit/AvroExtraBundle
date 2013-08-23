@@ -25,7 +25,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
  *
  * @author Joris de Wit <joris.w.dewit@gmail.com>
  */
-class BaseController extends Controller
+class BaseController extends CommonController
 {
     /**
      * The default number of items to show in the list view
@@ -34,17 +34,7 @@ class BaseController extends Controller
      */
     protected $listCount = 10;
 
-    /**
-     * dbDriver
-     *
-     * @var string
-     */
-    protected $dbDriver = 'mongodb';
 
-    /**
-     * modelName
-     */
-    protected $modelName = false;
 
     /**
      * formTypeClass
@@ -96,10 +86,14 @@ class BaseController extends Controller
      * Create a new model.
      *
      */
-    public function baseNewAction(Request $request, $prePersistCallback = false, $postPersistCallback = false, $formErrorCallback = false)
+    public function baseNewAction(Request $request, $prePersistCallback = false, $postPersistCallback = false, $preSetCallback = false)
     {
         $modelManager = $this->getModelManager();
         $model = $modelManager->create();
+
+        if ($preSetCallback) {
+            $model = $preSetCallback($model);
+        }
 
         $form = $this->getForm($model);
 
@@ -236,58 +230,6 @@ class BaseController extends Controller
         return $this->template ? $this->template : sprintf('%sBundle:%s:%s.html.twig', str_replace(' ', '', ucwords(str_replace('_', ' ', $this->bundleAlias))), $this->modelName ? $this->modelName : ucfirst($this->modelAlias), $name);
     }
 
-    /**
-     * getModel
-     *
-     * @param string $id
-     * @return $model
-     */
-    protected function getModel($id)
-    {
-        return $this->getModelManager()->getRepository()->find($id);
-    }
-
-    /**
-     * getModelClass
-     *
-     * @return Model class name
-     */
-    private function getModelClass()
-    {
-        if ($this->modelName) {
-            return sprintf('%sBundle\\Document\\%s', str_replace(' ', '\\', ucwords(str_replace('_', ' ', $this->bundleAlias))), ucfirst($this->modelName));
-        } else {
-            return sprintf('%sBundle\\Document\\%s', str_replace(' ', '\\', ucwords(str_replace('_', ' ', $this->bundleAlias))), ucfirst($this->modelAlias));
-        }
-    }
-
-    /**
-     * getModelManager
-     *
-     * @return $modelManager
-     */
-    public function getModelManager()
-    {
-        $modelManagerAlias = sprintf('%s.%s.manager', $this->bundleAlias, $this->modelAlias);
-
-        if ($this->container->has($modelManagerAlias)) {
-            return $this->get($modelManagerAlias);
-        } else {
-            switch ($this->dbDriver) {
-                case 'mongodb':
-                    $objectManager = 'doctrine.odm.mongodb.document_manager';
-                    $modelManagerClass = 'Avro\ExtraBundle\Doctrine\MongoDB\Manager\MongoDBManager';
-                    break;
-                case 'orm':
-                    $objectManager = 'doctrine.orm.entity_manager';
-                    $modelManagerClass = 'Avro\ExtraBundle\ORM\Manager\EntityManager';
-                    break;
-
-            }
-
-            return new $modelManagerClass($this->get($objectManager), $this->get('event_dispatcher'), $this->getModelClass());
-        }
-    }
 
     public function getForm($model)
     {
@@ -298,47 +240,12 @@ class BaseController extends Controller
         return $this->createForm(new $this->formTypeClass($this->getModelClass()), $model);
     }
 
-    /**
-     * getFormErrors
-     *
-     * @param Form $form
-     * @return array
-     */
-    private function getFormErrors(Form $form) {
-        $errors = array();
-        foreach ($form->getErrors() as $key => $error) {
-            $template = $error->getMessageTemplate();
-            $parameters = $error->getMessageParameters();
 
-            foreach ($parameters as $var => $value) {
-                $template = str_replace($var, $value, $template);
-            }
-
-            $errors[$key] = $template;
-        }
-        if ($form->count()) {
-            foreach ($form as $child) {
-                if (!$child->isValid()) {
-                    $errors[$child->getName()] = $this->getFormErrors($child);
-                }
-            }
-        }
-        return $errors;
-    }
 
     public function getPagination($request, $query) {
         return $this->get('knp_paginator')->paginate($query, $request->query->get('page', 1), $request->query->get('count', $this->listCount));
     }
 
-    /**
-     * getBundleShortName
-     *
-     * @return string
-     */
-    private function getBundleShortName()
-    {
-        return sprintf('%s%s', ucfirst(str_replace('_', '', $this->bundleAlias)), ucfirst($this->modelAlias));
-    }
 
     /**
      * addFlash
@@ -366,23 +273,4 @@ class BaseController extends Controller
         }
     }
 
-    public function findModel($id)
-    {
-        $model = $this->getModelManager()->getRepository()->find($id);
-
-        if (!$model) {
-            $this->get('session')->getFlashBag()->set('error', sprintf('%s.%s.not_found', $this->bundleAlias, $this->modelAlias));
-
-            return new RedirectResponse($this->container->get('router')->generate('avro_blog_post_list'));
-        }
-
-        return $model;
-    }
-
-    public function findModelBySlug($slug)
-    {
-        $model = $this->getModelManager()->getRepository()->findOneBy(array('slug' => $slug));
-
-        return $model;
-    }
 }

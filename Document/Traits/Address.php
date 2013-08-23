@@ -50,7 +50,7 @@ trait Address
             $address .= $this->address;
 
             if ($this->city) {
-                $address .= '<br />'.$this->city;
+                $address .= '<br>'.$this->city;
 
                 if ($this->state) {
                     $address .= ', '.$this->state;
@@ -62,7 +62,7 @@ trait Address
             }
 
             if ($this->country) {
-                $address .= '<br />'.$this->country;
+                $address .= '<br>'.$this->country;
             }
         }
 
