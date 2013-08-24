@@ -16,20 +16,36 @@ use Symfony\Component\DependencyInjection\ContainerAware;
  */
 class RestController extends CommonController
 {
+    public function validateData($data, $expectedFields)
+    {
+        foreach($expectedFields as $field) {
+            if (!property_exists($data, $field)) {
+                throw new \Exception(sprintf('Missing expected field - %s -', $field, 400));
+            }
+        }
+
+        return false;
+    }
+
+    public function validateModel($model)
+    {
+        $validator = $this->container->get('validator');
+
+        if (count($errors = $validator->validate($model)) > 0) {
+            throw new \Exception('Invalid data', 400);
+        }
+
+        return false;
+    }
+
     public function unauthorizedResponse()
     {
-        return new JsonResponse(array(
-            'code' => 'unauthorized',
-            'message' => 'You are not authorized to perform this action'
-        ), 403);
+        throw new \Exception('Not authorized', 403);
     }
 
     public function invalidDataResponse($errors)
     {
-        return new JsonResponse(array(
-            'code' => 'invalid_data',
-            'errors' => $errors
-        ), 400) ;
+
     }
 
     public function notFoundResponse($name)

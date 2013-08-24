@@ -1,0 +1,5 @@
+services:
+    avro_extra.rest.exception_listener:
+        class: Avro\ExtraBundle\Listener\RestExceptionListener
+        tags:
+            - { name: kernel.event_listener, event: kernel.exception, method: onKernelException }
