@@ -2,7 +2,6 @@
 
 namespace Avro\ExtraBundle\Controller;
 
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -71,9 +70,9 @@ class BaseController extends CommonController
             $query = $this->getModelManager()->getQueryBuilder()->hydrate(false)->getQuery();
         }
 
-        return $this->get('templating')->renderResponse($this->getTemplate('list'), array(
+        return $this->container->get('templating')->renderResponse($this->getTemplate('list'), array(
             'modelAlias' => $modelAlias,
-            'pagination' => $this->get('knp_paginator')->paginate(
+            'pagination' => $this->container->get('knp_paginator')->paginate(
                                 $query,
                                 $request->query->get('page', 1),
                                 $this->listCount
@@ -144,7 +143,7 @@ class BaseController extends CommonController
             }
         }
 
-        return $this->get('templating')->renderResponse($this->getTemplate('new'), array(
+        return $this->container->get('templating')->renderResponse($this->getTemplate('new'), array(
             'form' => $form->createview(),
             $this->modelAlias => $model
         ));

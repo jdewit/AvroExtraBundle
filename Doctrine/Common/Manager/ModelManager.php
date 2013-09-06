@@ -14,7 +14,7 @@ use Doctrine\Common\Persistence\ObjectManager;
  *
  * @author Joris de Wit <joris.w.dewit@gmail.com>
  */
-abstract class BaseManager // implements BaseManagerInterface
+abstract class ModelManager implements ModelManagerInterface
 {
     /**
      * DocumentManager

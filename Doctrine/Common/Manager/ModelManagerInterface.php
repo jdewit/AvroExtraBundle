@@ -8,12 +8,21 @@ namespace Avro\ExtraBundle\Doctrine\Common\Manager;
  * @author Joris de Wit <joris.w.dewit@gmail.com>
  * @license For the full copyright and license information, please view the LICENSE
  */
-interface BaseManagerInterface
+interface ModelManagerInterface
 {
     /**
      * @return className
      */
     public function getClass();
+
+    /**
+     * Get Doctrine Repository
+     *
+     * @return Repository
+     */
+    public function getRepository();
+
+    public function dispatchEvent($action, $model);
 
     /**
      * Creates an Entity/Document
@@ -46,11 +55,6 @@ interface BaseManagerInterface
      * @param object $document
      */
     public function delete($document);
-
-    /**
-     * Customize entity/document before it is persisted/updated
-     */
-    public function customize($document);
 
     /**
      * Find one document by criteria
@@ -87,10 +91,9 @@ interface BaseManagerInterface
     public function findAll();
 
     /**
-     * Find all as array
+     * Get Doctrine QueryBuilder
      *
-     * @param  array  $criteria
-     * @return object Document
+     * @return QueryBuilder
      */
-    public function findAllAsArray($fields);
+    public function getQueryBuilder();
 }

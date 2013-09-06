@@ -7,14 +7,14 @@
 
 namespace Avro\ExtraBundle\Doctrine\ORM\Manager;
 
-use Avro\ExtraBundle\Doctrine\Common\Manager\BaseManager;
+use Avro\ExtraBundle\Doctrine\Common\Manager\ModelManager;
 
 /**
  * Base ORM Managing class
  *
  * @author Joris de Wit <joris.w.dewit@gmail.com>
  */
-abstract class BaseORMManager extends BaseManager
+abstract class OrmModelManager extends ModelManager
 {
     /**
      * Find by as array

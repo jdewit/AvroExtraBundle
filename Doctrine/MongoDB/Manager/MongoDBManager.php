@@ -7,28 +7,18 @@
 
 namespace Avro\ExtraBundle\Doctrine\MongoDB\Manager;
 
-use Avro\ExtraBundle\Doctrine\Common\Manager\BaseManager;
+use Avro\ExtraBundle\Doctrine\Common\Manager\ModelManager;
 
 /**
  * Base Managing class for document managers
  *
  * @author Joris de Wit <joris.w.dewit@gmail.com>
  */
-class MongoDBManager extends BaseManager
+class MongoDBManager extends ModelManager
 {
     public function __construct($om, $dispatcher, $class)
     {
         parent::__construct($om, $dispatcher, $class);
-    }
-
-    /**
-     * getQueryBuilder
-     *
-     * @return QueryBuilder
-     */
-    public function getQueryBuilder()
-    {
-        return $this->om->createQueryBuilder($this->class);
     }
 
     /**

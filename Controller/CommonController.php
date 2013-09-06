@@ -7,6 +7,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Form\Form;
 use Symfony\Component\DependencyInjection\ContainerAware;
+use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 
 /**
  * A base controller class that makes prototyping controllers easy
@@ -23,7 +24,7 @@ use Symfony\Component\DependencyInjection\ContainerAware;
  *
  * @author Joris de Wit <joris.w.dewit@gmail.com>
  */
-class CommonController extends ContainerAware
+class CommonController extends Controller
 {
     /**
      * dbDriver
@@ -45,7 +46,7 @@ class CommonController extends ContainerAware
      */
     protected function getModel($id)
     {
-        return $this->container->getModelManager()->getRepository()->find($id);
+        return $this->getModelManager()->getRepository()->find($id);
     }
 
     /**
@@ -53,7 +54,7 @@ class CommonController extends ContainerAware
      *
      * @return Model class name
      */
-    private function getModelClass()
+    public function getModelClass()
     {
         if ($this->modelName) {
             return sprintf('%sBundle\\Document\\%s', str_replace(' ', '\\', ucwords(str_replace('_', ' ', $this->bundleAlias))), ucfirst($this->modelName));
@@ -86,7 +87,7 @@ class CommonController extends ContainerAware
 
             }
 
-            return new $modelManagerClass($this->container->get($objectManager), $this->container->get('event_dispatcher'), $this->container->getModelClass());
+            return new $modelManagerClass($this->container->get($objectManager), $this->container->get('event_dispatcher'), $this->getModelClass());
         }
     }
 
@@ -95,7 +96,7 @@ class CommonController extends ContainerAware
      *
      * @return string
      */
-    private function getBundleShortName()
+    public function getBundleShortName()
     {
         return sprintf('%s%s', ucfirst(str_replace('_', '', $this->bundleAlias)), ucfirst($this->modelAlias));
     }
