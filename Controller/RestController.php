@@ -18,13 +18,21 @@ class RestController extends CommonController
 {
     public function validateData($data, $expectedFields)
     {
-        foreach($expectedFields as $field) {
-            if (!property_exists($data, $field)) {
-                throw new \Exception(sprintf('Missing expected field - %s -', $field, 400));
+        if (is_array($data)) {
+            foreach($expectedFields as $field) {
+                if (!array_key_exists($field, $data)) {
+                    throw new \Exception(sprintf('Missing expected field - %s -', $field, 400));
+                }
+            }
+        } else {
+            foreach($expectedFields as $field) {
+                if (!property_exists($data, $field)) {
+                    throw new \Exception(sprintf('Missing expected field - %s -', $field, 400));
+                }
             }
         }
 
-        return false;
+        return true;
     }
 
     public function validateModel($model)
@@ -35,7 +43,7 @@ class RestController extends CommonController
             throw new \Exception('Invalid data', 400);
         }
 
-        return false;
+        return true;
     }
 
     public function unauthorizedResponse()
