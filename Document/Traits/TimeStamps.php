@@ -56,7 +56,7 @@ trait TimeStamps
     public function setIsDeleted($isDeleted)
     {
         if ($isDeleted) {
-            $this->deletedAt(new \DateTime('now'));
+            $this->setDeletedAt(new \DateTime('now'));
         }
 
         $this->isDeleted = $isDeleted;
