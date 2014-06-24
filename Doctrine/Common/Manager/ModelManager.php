@@ -196,28 +196,34 @@ abstract class ModelManager implements ModelManagerInterface
      * Find one model by criteria
      *
      * @param  array  $criteria
+     * @param  boolean $suppressException
      * @return object Document
      */
-    public function findOneBy(array $criteria)
+    public function findOneBy(array $criteria, $suppressException)
     {
         $criteria = array_merge($criteria, $this->getCriteria());
 
-        return $this->repository->findOneBy($criteria);
+        $model = $this->repository->findOneBy($criteria);
+
+        if ($suppressException !== true && !is_object($model)) {
+            throw new NotFoundHttpException(sprintf('%s not found', $this->modelAlias));
+        }
     }
 
     /**
      * Find one model by id
      *
      * @param  string $id
+     * @param  boolean $suppressException
      * @return object Document
      */
-    public function find($id)
+    public function find($id, $suppressException)
     {
         if (!$id) {
             throw new \InvalidArgumentException('Id must be specified.');
         }
 
-        return $this->findOneBy(array('id' => $id));
+        return $this->findOneBy(array('id' => $id), $suppressException);
     }
 
     public function getCriteria()
