@@ -60,17 +60,19 @@ interface ModelManagerInterface
      * Find one document by criteria
      *
      * @param  array  $criteria
+     * @param  boolean  $suppressException
      * @return object Document
      */
-    public function findOneBy(array $criteria);
+    public function findOneBy(array $criteria, $suppressException = false);
 
     /**
      * Find one document by id
      *
      * @param  string $id
+     * @param  boolean  $suppressException
      * @return object Document
      */
-    public function find($id);
+    public function find($id, $suppressException = false);
 
     /**
      * Find documents by criteria

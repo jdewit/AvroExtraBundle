@@ -8,6 +8,7 @@
 namespace Avro\ExtraBundle\Doctrine\Common\Manager;
 
 use Doctrine\Common\Persistence\ObjectManager;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 /**
  * Base Managing class for model managers
@@ -199,7 +200,7 @@ abstract class ModelManager implements ModelManagerInterface
      * @param  boolean $suppressException
      * @return object Document
      */
-    public function findOneBy(array $criteria, $suppressException)
+    public function findOneBy(array $criteria, $suppressException = false)
     {
         $criteria = array_merge($criteria, $this->getCriteria());
 
@@ -208,6 +209,8 @@ abstract class ModelManager implements ModelManagerInterface
         if ($suppressException !== true && !is_object($model)) {
             throw new NotFoundHttpException(sprintf('%s not found', $this->modelAlias));
         }
+
+        return $model;
     }
 
     /**
@@ -217,7 +220,7 @@ abstract class ModelManager implements ModelManagerInterface
      * @param  boolean $suppressException
      * @return object Document
      */
-    public function find($id, $suppressException)
+    public function find($id, $suppressException = false)
     {
         if (!$id) {
             throw new \InvalidArgumentException('Id must be specified.');
