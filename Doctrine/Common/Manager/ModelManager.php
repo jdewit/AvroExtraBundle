@@ -265,33 +265,20 @@ abstract class ModelManager implements ModelManagerInterface
     {
         return $this->repository->findAll();
     }
-//
-//    /**
-//     * Find all as array
-//     *
-//     * @param  array  $fields
-//     * @return object Document
-//     */
-//    public function findAllAsArray($fields)
-//    {
-//        if ($this->dbDriver == 'mongodb') {
-//            $qb = $this->getQueryBuilder();
-//            foreach ($fields as $field) {
-//                $qb->select($field);
-//            }
-//            $objects = $qb->hydrate(false)
-//                ->getQuery()
-//                ->execute();
-//
-//        } else {
-//            throw new \Exception('driver not implemented');
-//        }
-//
-//        return array_values($objects->toArray());
-//    }
-//
+
     public function getQueryBuilder()
     {
         return $this->om->createQueryBuilder($this->class);
     }
+
+    public function detach($model)
+    {
+        $this->om->detach($model);
+    }
+
+    public function clear()
+    {
+        $this->om->clear($this->getClass());
+    }
+
 }
